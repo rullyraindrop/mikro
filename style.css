@@ -295,4 +295,42 @@ main {
 .auth-box button:hover {
   background: #ff4d4d;
 }
+.auth-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.auth-box {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.auth-box input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.auth-box button:hover {
+  background: #ff4d4d;
+}
 
