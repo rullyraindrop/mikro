@@ -211,30 +211,35 @@
     }
 
     // ✅ DOM READY WRAPPER TO UPDATE UI ON LOGIN STATE
-    document.addEventListener("DOMContentLoaded", () => {
-      auth.onAuthStateChanged(user => {
-        const greeting = document.getElementById("userGreeting");
-        const signInBtn = document.getElementById("signInBtn");
-        const profileTab = document.getElementById("profileTab");
-        const userPhoto = document.getElementById("userPhoto");
+auth.onAuthStateChanged(user => {
+  const greeting = document.getElementById("userGreeting");
+  const signInBtn = document.getElementById("signInBtn");
+  const profileTab = document.getElementById("profileTab");
+  const userPhoto = document.getElementById("userPhoto");
 
-        if (user && user.emailVerified) {
-          greeting.textContent = `Welcome, ${user.displayName || user.email}`;
-          greeting.style.display = "inline";
-          signInBtn.style.display = "none";
-          profileTab.style.display = "flex";
-          if (userPhoto) userPhoto.src = user.photoURL || "default-user.png";
-        } else {
-          greeting.style.display = "none";
-          signInBtn.style.display = "inline";
-          profileTab.style.display = "none";
-        }
-      });
+  if (user && user.emailVerified) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      const username = doc.exists ? doc.data().username : user.displayName || user.email;
+      greeting.textContent = `Welcome, ${username}`;
     });
+
+    greeting.style.display = "inline";
+    signInBtn.style.display = "none";
+    profileTab.style.display = "flex";
+    if (userPhoto) userPhoto.src = user.photoURL || "default-user.png";
+  } else {
+    greeting.style.display = "none";
+    signInBtn.style.display = "inline";
+    profileTab.style.display = "none";
+  }
+});
+<button onclick="signInWithGoogle()">Sign in with Google</button>
+
   </script>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
   <script src="script.js"></script>
+
 </body>
 </html>
