@@ -1,34 +1,66 @@
-<main>
-  <section class="feature">
-    <div class="feature-image">
-      <img src="images/look1.jpg" alt="Statement Look" />
-    </div>
-    <div class="feature-text">
-      <h2>Statement Pieces</h2>
-      <p>Discover bold looks and silhouettes to elevate your style this season. Think volume, texture, and unique forms.</p>
-      <a href="new.html" class="btn">Shop Now</a>
-    </div>
-  </section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mikro Store - Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+</head>
+<body>
 
-  <section class="feature">
-    <div class="feature-image">
-      <img src="images/look2.jpg" alt="Preloved Finds" />
+  <header>
+    <div class="header-left">
+      <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
+      <h1>Mikro Store</h1>
     </div>
-    <div class="feature-text">
-      <h2>Preloved Finds</h2>
-      <p>Curated secondhand selections that are kinder to the planet — and your wallet. Each item tells a story.</p>
-      <a href="preloved.html" class="btn">Browse Preloved</a>
-    </div>
-  </section>
+    <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
+  </header>
 
-  <section class="feature">
-    <div class="feature-image">
-      <img src="images/look3.jpg" alt="Daily Staples" />
-    </div>
-    <div class="feature-text">
-      <h2>Everyday Staples</h2>
-      <p>From neutral tones to versatile layers, build your essential capsule wardrobe with us.</p>
-      <a href="shop.html" class="btn">Explore Staples</a>
-    </div>
-  </section>
-</main>
+  <nav class="category-nav">
+    <a href="index.html" class="active">Home</a>
+    <a href="new.html">New</a>
+    <a href="#">Shop</a>
+    <a href="#">Preloved</a>
+  </nav>
+
+  <main>
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look1.jpg" alt="Statement Look" />
+      </div>
+      <div class="feature-text">
+        <h2>Statement Pieces</h2>
+        <p>Discover bold silhouettes, volume, and details that make a difference — the must-have pieces to elevate your wardrobe this season.</p>
+        <a href="new.html" class="btn">Shop New</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look2.jpg" alt="Preloved Finds" />
+      </div>
+      <div class="feature-text">
+        <h2>Preloved Finds</h2>
+        <p>From classic staples to rare gems, explore our handpicked preloved collection — sustainability meets personal style.</p>
+        <a href="#" class="btn">Browse Preloved</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look3.jpg" alt="Wardrobe Staples" />
+      </div>
+      <div class="feature-text">
+        <h2>Everyday Staples</h2>
+        <p>Build a versatile capsule wardrobe with high-quality, neutral-toned essentials designed for every body and every day.</p>
+        <a href="#" class="btn">Explore Staples</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init();</script>
+</body>
+</html>
