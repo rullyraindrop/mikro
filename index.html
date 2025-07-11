@@ -20,7 +20,7 @@
     </div>
     <div class="header-right">
       <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
-      <button class="btn small" onclick="toggleRegisterModal()">Register</button>
+      <button class="btn small" onclick="toggleSignInModal()">Sign In</button>
     </div>
   </header>
 
@@ -30,6 +30,19 @@
     <a href="#">Shop</a>
     <a href="#">Preloved</a>
   </nav>
+
+  <!-- Sign In Modal -->
+  <div id="signInModal" class="auth-modal" style="display: none;">
+    <div class="auth-box">
+      <h2>Sign In</h2>
+      <input type="email" id="signInEmail" placeholder="Email" required />
+      <input type="password" id="signInPassword" placeholder="Password" required />
+      <button onclick="signInUser()">Sign In</button>
+      <p style="margin-top: 15px;">Don't have an account? Register below now!</p>
+      <button onclick="toggleRegisterModal()">Register</button>
+      <button onclick="toggleSignInModal()">Close</button>
+    </div>
+  </div>
 
   <!-- Registration Modal -->
   <div id="registerModal" class="auth-modal" style="display: none;">
@@ -56,6 +69,7 @@
     <div class="auth-box">
       <h2>Verify Your Email</h2>
       <p>We have sent a verification link to your email address. Please check your inbox and verify your email to activate your account.</p>
+      <p><em>If unavailable, check the spam folder.</em></p>
       <button onclick="closeVerifyNotice()">Back to Home</button>
     </div>
   </div>
@@ -98,20 +112,25 @@
   <!-- Firebase Config -->
   <script>
     const firebaseConfig = {
-       apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
-  authDomain: "mikro-c8998.firebaseapp.com",
-  projectId: "mikro-c8998",
-  storageBucket: "mikro-c8998.firebasestorage.app",
-  messagingSenderId: "180409134328",
-  appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
-  measurementId: "G-QEXHW4F7PV"
+      apiKey: "YOUR_VALID_API_KEY_HERE",
+      authDomain: "mikro-c8998.firebaseapp.com",
+      projectId: "mikro-c8998",
+      storageBucket: "mikro-c8998.appspot.com",
+      messagingSenderId: "180409134328",
+      appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+      measurementId: "G-QEXHW47FPY"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
     function toggleRegisterModal() {
-      const modal = document.getElementById("registerModal");
+      document.getElementById("registerModal").style.display = "flex";
+      document.getElementById("signInModal").style.display = "none";
+    }
+
+    function toggleSignInModal() {
+      const modal = document.getElementById("signInModal");
       modal.style.display = modal.style.display === "none" ? "flex" : "none";
     }
 
@@ -140,8 +159,7 @@
         .then(userCredential => {
           const user = userCredential.user;
 
-          // Store user data in Firestore
-          db.collection("users").doc(user.uid).set({
+          return db.collection("users").doc(user.uid).set({
             username: username,
             email: email,
             address: {
@@ -152,25 +170,34 @@
               fullAddress: fullAddress
             },
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-
-          // Send verification email
-          user.sendEmailVerification({
-            url: window.location.origin + "/index.html"
           }).then(() => {
-            toggleRegisterModal();
-            document.getElementById("verifyNotice").style.display = "flex";
+            return user.sendEmailVerification({
+              url: window.location.origin + "/index.html"
+            });
           });
+        })
+        .then(() => {
+          document.getElementById("registerModal").style.display = "none";
+          document.getElementById("verifyNotice").style.display = "flex";
+        })
+        .catch(error => alert(error.message));
+    }
+
+    function signInUser() {
+      const email = document.getElementById("signInEmail").value.trim();
+      const password = document.getElementById("signInPassword").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Signed in successfully");
+          toggleSignInModal();
         })
         .catch(error => alert(error.message));
     }
   </script>
 
-  <!-- AOS Library -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
-
-  <!-- Your custom logic -->
   <script src="script.js"></script>
 </body>
 </html>
