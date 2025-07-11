@@ -9,13 +9,17 @@
 </head>
 <body>
 
-  <header>
-    <div class="header-left">
-      <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
-      <h1>Mikro Store</h1>
-    </div>
+ <header>
+  <div class="header-left">
+    <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
+    <h1>Mikro Store</h1>
+  </div>
+  <div class="header-right">
     <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
-  </header>
+    <button class="btn small" onclick="toggleAuth()">Register / Login</button>
+  </div>
+</header>
+
 
   <nav class="category-nav">
     <a href="index.html" class="active">Home</a>
