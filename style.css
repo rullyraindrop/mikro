@@ -159,3 +159,7 @@ main {
     padding: 0 1em;
   }
 }
+.category-nav a.active {
+  color: #ff4d4d;
+  text-decoration: underline;
+}
