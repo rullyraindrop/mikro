@@ -50,3 +50,33 @@ function googleLogin() {
     .then(() => alert("Google login success"))
     .catch(error => alert(error.message));
 }
+function toggleAuth() {
+  const modal = document.getElementById("authModal");
+  modal.style.display = modal.style.display === "none" ? "flex" : "none";
+}
+
+function register() {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(user => {
+      user.user.sendEmailVerification();
+      alert("Verification email sent!");
+    })
+    .catch(error => alert(error.message));
+}
+
+function login() {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => alert("Login successful"))
+    .catch(error => alert(error.message));
+}
+
+function googleLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(() => alert("Google login success"))
+    .catch(error => alert(error.message));
+}
