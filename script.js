@@ -34,8 +34,14 @@ function toggleAuth() {
 }
 
 function register() {
-  const email = document.getElementById("authEmail").value;
+  const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
+
+  if (!email.includes("@") || !email.includes(".")) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
   auth.createUserWithEmailAndPassword(email, password)
     .then(user => {
       user.user.sendEmailVerification();
@@ -43,6 +49,7 @@ function register() {
     })
     .catch(error => alert(error.message));
 }
+
 
 function login() {
   const email = document.getElementById("authEmail").value;
