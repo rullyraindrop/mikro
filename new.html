@@ -6,7 +6,7 @@
   <title>New Collection - Mikro Store</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="new-page">
   <header>
     <div class="header-left">
       <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
@@ -15,61 +15,71 @@
     <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
   </header>
 
- <nav class="category-nav">
-  <a href="index.html">Home</a>
-  <a href="new.html" class="active">New</a>
-  <a href="#">Shop</a>
-  <a href="#">Preloved</a>
-</nav>
+  <nav class="category-nav">
+    <a href="index.html">Home</a>
+    <a href="new.html" class="active">New</a>
+    <a href="#">Shop</a>
+    <a href="#">Preloved</a>
+  </nav>
 
-
+  <!-- Breadcrumb with spacing -->
   <div class="breadcrumb">Home &gt; New</div>
 
- <div class="filter-bar">
-  <div class="filter">
-    <label for="availability">Availability:</label>
-    <select id="availability">
-      <option>All</option>
-      <option>In Stock</option>
-      <option>Sold Out</option>
-    </select>
+  <!-- Filter options -->
+  <div class="filter-bar">
+    <div class="filter">
+      <label for="availability">Availability:</label>
+      <select id="availability">
+        <option>All</option>
+        <option>In Stock</option>
+        <option>Sold Out</option>
+      </select>
+    </div>
+
+    <div class="filter">
+      <label for="sort">Sort by:</label>
+      <select id="sort">
+        <option>Featured</option>
+        <option>Best Selling</option>
+        <option>Price (Lowest)</option>
+        <option>Price (Highest)</option>
+      </select>
+    </div>
+
+    <div class="filter">
+      <label for="price-range">More Filters:</label>
+      <select id="price-range">
+        <option>All Prices</option>
+        <option>50k - 100k</option>
+        <option>100k - 200k</option>
+        <option>200k - 300k</option>
+        <option>300k - 500k</option>
+      </select>
+    </div>
   </div>
 
-  <div class="filter">
-    <label for="sort">Sort by:</label>
-    <select id="sort">
-      <option>Featured</option>
-      <option>Best Selling</option>
-      <option>Price (Lowest)</option>
-      <option>Price (Highest)</option>
-    </select>
-  </div>
-
-  <div class="filter">
-    <label for="price-range">More Filters:</label>
-    <select id="price-range">
-      <option>All Prices</option>
-      <option>50k - 100k</option>
-      <option>100k - 200k</option>
-      <option>200k - 300k</option>
-      <option>300k - 500k</option>
-    </select>
-  </div>
-</div>
-
+  <!-- Products section -->
   <main>
     <div class="products">
       <div class="product-card">
-        <img src="amba.jpg" alt="amba" class="product-img">
+        <img src="images/amba.jpg" alt="amba" class="product-img" />
         <h2>amba</h2>
         <p>Rp 799.000</p>
         <button class="quick-shop" onclick="addToCart('amba', '799k')">Quick Shop</button>
       </div>
+
       <div class="product-card">
-        <img src="bass.jpg" alt="Bass sink" class="product-img">
+        <img src="images/bass.jpg" alt="Bass sink" class="product-img" />
         <h2>Bass sink</h2>
         <p>Rp 969.000</p>
         <button class="quick-shop" onclick="addToCart('Bass', '969k')">Quick Shop</button>
+      </div>
+
+      <div class="product-card">
+        <img src="images/sola.jpg" alt="Sola coat" class="product-img" />
+        <h2>Sola coat</h2>
+        <p>Rp 1.200.000</p>
+        <button class="quick-shop" onclick="addToCart('Sola', '1200k')">Quick Shop</button>
       </div>
     </div>
   </main>
