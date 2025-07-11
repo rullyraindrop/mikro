@@ -35,6 +35,17 @@
         </div>
       </div>
     </div>
+<div id="userGreeting" style="display: none;"></div>
+<button id="signInBtn" onclick="toggleSignInModal()">Sign In</button>
+<div id="profileTab" style="display: none;">
+  <img id="userPhoto" src="default-user.png" alt="Profile" onclick="toggleProfileMenu()" class="profile-icon" />
+  <div id="profileMenu" class="profile-menu hidden">
+    <a href="#">Edit Profile</a>
+    <a href="#">Purchase History</a>
+    <a href="#" onclick="deleteAccount()">Delete Account</a>
+    <a href="#" onclick="signOutUser()">Sign Out</a>
+  </div>
+</div>
   </header>
 
   <nav class="category-nav">
@@ -238,5 +249,33 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
   <script src="script.js"></script>
+
+<script>
+  // All your Firebase config + functions above...
+
+  // ✅ DOM READY WRAPPER TO ENSURE PROFILE UPDATES WORK
+  document.addEventListener("DOMContentLoaded", () => {
+    auth.onAuthStateChanged(user => {
+      const greeting = document.getElementById("userGreeting");
+      const signInBtn = document.getElementById("signInBtn");
+      const profileTab = document.getElementById("profileTab");
+
+      if (user && user.emailVerified) {
+        greeting.textContent = `Welcome, ${user.displayName || user.email}`;
+        greeting.style.display = "inline";
+        signInBtn.style.display = "none";
+        profileTab.style.display = "flex";
+
+        const photo = user.photoURL || "default-user.png";
+        document.getElementById("userPhoto").src = photo;
+      } else {
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
