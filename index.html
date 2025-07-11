@@ -49,3 +49,92 @@
   <!-- Feature Sections -->
   <main>
     <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look1.jpg" alt="Statement Look" />
+      </div>
+      <div class="feature-text">
+        <h2>Statement Pieces</h2>
+        <p>Discover bold silhouettes, volume, and details that make a difference — the must-have pieces to elevate your wardrobe this season.</p>
+        <a href="new.html" class="btn">Shop New</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look2.jpg" alt="Preloved Finds" />
+      </div>
+      <div class="feature-text">
+        <h2>Preloved Finds</h2>
+        <p>From classic staples to rare gems, explore our handpicked preloved collection — sustainability meets personal style.</p>
+        <a href="#" class="btn">Browse Preloved</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look3.jpg" alt="Wardrobe Staples" />
+      </div>
+      <div class="feature-text">
+        <h2>Everyday Staples</h2>
+        <p>Build a versatile capsule wardrobe with high-quality, neutral-toned essentials designed for every body and every day.</p>
+        <a href="#" class="btn">Explore Staples</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase Config -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAIZJ65vfJX-KWMS0hb05-WWhudMSsz-_c",
+      authDomain: "mikro-c8998.firebaseapp.com",
+      projectId: "mikro-c8998",
+      storageBucket: "mikro-c8998.appspot.com",
+      messagingSenderId: "180409134328",
+      appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+      measurementId: "G-QEXHW47FPY"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
+
+  <!-- Auth Logic -->
+  <script>
+    function toggleAuth() {
+      const modal = document.getElementById("authModal");
+      modal.style.display = modal.style.display === "none" ? "flex" : "none";
+    }
+
+    function register() {
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(user => {
+          user.user.sendEmailVerification();
+          alert("Verification email sent!");
+        })
+        .catch(error => alert(error.message));
+    }
+
+    function login() {
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => alert("Login successful"))
+        .catch(error => alert(error.message));
+    }
+
+    function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => alert("Google login success"))
+        .catch(error => alert(error.message));
+    }
+  </script>
+
+  <!-- AOS Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>
