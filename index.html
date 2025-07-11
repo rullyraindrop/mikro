@@ -7,13 +7,12 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 
-  <!-- ✅ Correct Firebase SDKs for HTML/JS (NOT modules) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
-  <!-- Header -->
   <header>
     <div class="header-left">
       <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
@@ -21,11 +20,10 @@
     </div>
     <div class="header-right">
       <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
-      <button class="btn small" onclick="toggleAuth()">Register / Login</button>
+      <button class="btn small" onclick="toggleRegisterModal()">Register</button>
     </div>
   </header>
 
-  <!-- Navigation -->
   <nav class="category-nav">
     <a href="index.html" class="active">Home</a>
     <a href="new.html">New</a>
@@ -33,20 +31,26 @@
     <a href="#">Preloved</a>
   </nav>
 
-  <!-- Auth Modal -->
-  <div id="authModal" class="auth-modal" style="display:none;">
+  <!-- Registration Modal -->
+  <div id="registerModal" class="auth-modal" style="display: none;">
     <div class="auth-box">
-      <h2>Register or Sign In</h2>
-      <input type="email" id="authEmail" placeholder="Email" />
-      <input type="password" id="authPassword" placeholder="Password" />
-      <button onclick="toggleRegisterModal()">Register</button>
-      <button onclick="login()">Login</button>
-      <button onclick="googleLogin()">Sign in with Google</button>
-      <button onclick="toggleAuth()">Close</button>
+      <h2>Register Account</h2>
+      <input type="text" id="regUsername" placeholder="Username" required />
+      <input type="email" id="regEmail" placeholder="Email" required />
+      <input type="password" id="regPassword" placeholder="Password" required />
+
+      <h3>Address</h3>
+      <input type="text" id="regProvince" placeholder="Province" required />
+      <input type="text" id="regCity" placeholder="City" required />
+      <input type="text" id="regKecamatan" placeholder="Kecamatan" required />
+      <input type="text" id="regPostalCode" placeholder="Postal Code" required />
+      <textarea id="regFullAddress" placeholder="Full Address" rows="3" required></textarea>
+
+      <button onclick="registerUser()">Register</button>
+      <button onclick="toggleRegisterModal()">Cancel</button>
     </div>
   </div>
 
-  <!-- Feature Sections -->
   <main>
     <section class="feature" data-aos="fade-up">
       <div class="feature-image">
@@ -82,98 +86,73 @@
     </section>
   </main>
 
-  <!-- ✅ Firebase Config -->
+  <!-- Firebase Config -->
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
-  authDomain: "mikro-c8998.firebaseapp.com",
-  projectId: "mikro-c8998",
-  storageBucket: "mikro-c8998.firebasestorage.app",
-  messagingSenderId: "180409134328",
-  appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
-  measurementId: "G-QEXHW4F7PV"
+      apiKey: "AIzaSyAIZJ65vfJX-KWMS0hb05-WWhudMSsz-_c",
+      authDomain: "mikro-c8998.firebaseapp.com",
+      projectId: "mikro-c8998",
+      storageBucket: "mikro-c8998.appspot.com",
+      messagingSenderId: "180409134328",
+      appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+      measurementId: "G-QEXHW47FPY"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function toggleRegisterModal() {
+      const modal = document.getElementById("registerModal");
+      modal.style.display = modal.style.display === "none" ? "flex" : "none";
+    }
+
+    function registerUser() {
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const username = document.getElementById("regUsername").value.trim();
+
+      const province = document.getElementById("regProvince").value;
+      const city = document.getElementById("regCity").value;
+      const kecamatan = document.getElementById("regKecamatan").value;
+      const postal = document.getElementById("regPostalCode").value;
+      const fullAddress = document.getElementById("regFullAddress").value;
+
+      if (!email.includes("@") || !email.includes(".")) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          user.sendEmailVerification();
+
+          return db.collection("users").doc(user.uid).set({
+            username: username,
+            email: email,
+            address: {
+              province: province,
+              city: city,
+              kecamatan: kecamatan,
+              postalCode: postal,
+              fullAddress: fullAddress
+            },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        })
+        .then(() => {
+          alert("Registration successful! Please check your email for verification.");
+          toggleRegisterModal();
+        })
+        .catch(error => alert(error.message));
+    }
   </script>
 
   <!-- AOS Library -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
 
-  <!-- ✅ Your custom logic -->
+  <!-- Your custom logic -->
   <script src="script.js"></script>
-<!-- Registration Modal Page -->
-<div id="registerModal" class="auth-modal" style="display: none;">
-  <div class="auth-box">
-    <h2>Register Account</h2>
-    <input type="text" id="regUsername" placeholder="Username" required />
-    <input type="email" id="regEmail" placeholder="Email" required />
-    <input type="password" id="regPassword" placeholder="Password" required />
-
-    <h3>Address</h3>
-    <input type="text" id="regProvince" placeholder="Province" required />
-    <input type="text" id="regCity" placeholder="City" required />
-    <input type="text" id="regKecamatan" placeholder="Kecamatan" required />
-    <input type="text" id="regPostalCode" placeholder="Postal Code" required />
-    <textarea id="regFullAddress" placeholder="Full Address" rows="3" required></textarea>
-
-    <button onclick="registerUser()">Register</button>
-    <button onclick="toggleRegisterModal()">Cancel</button>
-  </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
-<script>
-const db = firebase.firestore();
-
-function toggleRegisterModal() {
-  const modal = document.getElementById("registerModal");
-  modal.style.display = modal.style.display === "none" ? "flex" : "none";
-}
-
-function registerUser() {
-  const email = document.getElementById("regEmail").value.trim();
-  const password = document.getElementById("regPassword").value;
-  const username = document.getElementById("regUsername").value.trim();
-
-  const province = document.getElementById("regProvince").value;
-  const city = document.getElementById("regCity").value;
-  const kecamatan = document.getElementById("regKecamatan").value;
-  const postal = document.getElementById("regPostalCode").value;
-  const fullAddress = document.getElementById("regFullAddress").value;
-
-  if (!email.includes("@") || !email.includes(".")) {
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      const user = userCredential.user;
-      user.sendEmailVerification();
-
-      // Save user data to Firestore
-      return db.collection("users").doc(user.uid).set({
-        username: username,
-        email: email,
-        address: {
-          province: province,
-          city: city,
-          kecamatan: kecamatan,
-          postalCode: postal,
-          fullAddress: fullAddress
-        },
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(() => {
-      alert("Registration successful! Please check your email for verification.");
-      toggleRegisterModal();
-    })
-    .catch(error => alert(error.message));
-}
-</script>
-
 </body>
 </html>
