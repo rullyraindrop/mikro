@@ -14,3 +14,16 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+// firebase.js
+const firebaseConfig = {
+  apiKey: "AIzaSyAIZJ65vfJX-KWMS0hb05-WWhudMSsz-_c",
+  authDomain: "mikro-c8998.firebaseapp.com",
+  projectId: "mikro-c8998",
+  storageBucket: "mikro-c8998.appspot.com",
+  messagingSenderId: "180409134328",
+  appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+  measurementId: "G-QEXHW47FPY"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
