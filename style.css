@@ -163,3 +163,8 @@ main {
   color: #ff4d4d;
   text-decoration: underline;
 }
+.breadcrumb {
+  font-size: 14px;
+  color: #777;
+  margin: 0 2em 1.5em 2em;  /* adds bottom margin (space below) */
+}
