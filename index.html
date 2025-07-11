@@ -6,25 +6,26 @@
   <title>Mikro Store - Home</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
-</head>
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
+</head>
 <body>
 
- <header>
-  <div class="header-left">
-    <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
-    <h1>Mikro Store</h1>
-  </div>
-  <div class="header-right">
-    <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
-    <button class="btn small" onclick="toggleAuth()">Register / Login</button>
-  </div>
-</header>
+  <!-- Header with Auth Button -->
+  <header>
+    <div class="header-left">
+      <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
+      <h1>Mikro Store</h1>
+    </div>
+    <div class="header-right">
+      <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
+      <button class="btn small" onclick="toggleAuth()">Register / Login</button>
+    </div>
+  </header>
 
-
+  <!-- Navigation -->
   <nav class="category-nav">
     <a href="index.html" class="active">Home</a>
     <a href="new.html">New</a>
@@ -32,6 +33,20 @@
     <a href="#">Preloved</a>
   </nav>
 
+  <!-- Auth Modal -->
+  <div id="authModal" style="display: none;" class="auth-modal">
+    <div class="auth-box">
+      <h2>Register or Sign In</h2>
+      <input type="email" id="authEmail" placeholder="Email" />
+      <input type="password" id="authPassword" placeholder="Password" />
+      <button onclick="register()">Register</button>
+      <button onclick="login()">Login</button>
+      <button onclick="googleLogin()">Sign in with Google</button>
+      <button onclick="toggleAuth()">Close</button>
+    </div>
+  </div>
+
+  <!-- Hero Sections -->
   <main>
     <section class="feature" data-aos="fade-up">
       <div class="feature-image">
@@ -67,6 +82,8 @@
     </section>
   </main>
 
+  <!-- Firebase + AOS + Logic -->
+  <script src="firebase.js"></script>
   <script src="script.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
