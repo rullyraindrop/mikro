@@ -230,4 +230,14 @@ main {
   background-color: #ff4d4d;
   transform: scale(1.05);
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn.small {
+  padding: 8px 16px;
+  font-size: 0.9em;
+}
 
