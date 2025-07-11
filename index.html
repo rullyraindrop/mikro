@@ -112,14 +112,15 @@
   <!-- Firebase Config -->
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
+  apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
   authDomain: "mikro-c8998.firebaseapp.com",
   projectId: "mikro-c8998",
-  storageBucket: "mikro-c8998.firebasestorage.app",
+  storageBucket: "mikro-c8998.appspot.com", // ✅ fixed
   messagingSenderId: "180409134328",
   appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
   measurementId: "G-QEXHW4F7PV"
-    };
+};
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
