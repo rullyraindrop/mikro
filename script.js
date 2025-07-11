@@ -8,48 +8,26 @@ function addToCart(itemName, price) {
   document.getElementById("cart-count").textContent = cart.length;
 
   const sidebar = document.getElementById("cart-sidebar");
-  sidebar.classList.remove("hidden");
+  if (sidebar) sidebar.classList.remove("hidden");
 
   const itemList = document.getElementById("cart-items");
-  itemList.innerHTML = "";
-  cart.forEach((item) => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
-    itemList.appendChild(li);
-  });
+  if (itemList) {
+    itemList.innerHTML = "";
+    cart.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+      itemList.appendChild(li);
+    });
+  }
 
-  document.getElementById("total-price").textContent = total.toFixed(2);
-}
-function toggleAuth() {
-  const modal = document.getElementById("authModal");
-  modal.style.display = modal.style.display === "none" ? "flex" : "none";
-}
-
-function register() {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      userCredential.user.sendEmailVerification();
-      alert("Registered! A verification email has been sent.");
-    })
-    .catch(error => alert(error.message));
+  const totalPrice = document.getElementById("total-price");
+  if (totalPrice) {
+    totalPrice.textContent = total.toFixed(2);
+  }
 }
 
-function login() {
-  const email = document.getElementById("authEmail").value;
-  const password = document.getElementById("authPassword").value;
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => alert("Login successful"))
-    .catch(error => alert(error.message));
-}
+// AUTHENTICATION FUNCTIONS
 
-function googleLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(() => alert("Google login success"))
-    .catch(error => alert(error.message));
-}
 function toggleAuth() {
   const modal = document.getElementById("authModal");
   modal.style.display = modal.style.display === "none" ? "flex" : "none";
