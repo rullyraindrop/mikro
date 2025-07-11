@@ -333,4 +333,34 @@ main {
 .auth-box button:hover {
   background: #ff4d4d;
 }
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  text-align: center;
+}
+
+.profile-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  right: 0;
+  margin-top: 8px;
+  padding: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-menu.hidden {
+  display: none;
+}
 
