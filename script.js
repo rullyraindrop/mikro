@@ -20,3 +20,33 @@ function addToCart(itemName, price) {
 
   document.getElementById("total-price").textContent = total.toFixed(2);
 }
+function toggleAuth() {
+  const modal = document.getElementById("authModal");
+  modal.style.display = modal.style.display === "none" ? "flex" : "none";
+}
+
+function register() {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      userCredential.user.sendEmailVerification();
+      alert("Registered! A verification email has been sent.");
+    })
+    .catch(error => alert(error.message));
+}
+
+function login() {
+  const email = document.getElementById("authEmail").value;
+  const password = document.getElementById("authPassword").value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => alert("Login successful"))
+    .catch(error => alert(error.message));
+}
+
+function googleLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(() => alert("Google login success"))
+    .catch(error => alert(error.message));
+}
