@@ -13,7 +13,7 @@
 </head>
 <body>
 
-  <!-- Header with Auth Button -->
+  <!-- Header -->
   <header>
     <div class="header-left">
       <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
@@ -34,7 +34,7 @@
   </nav>
 
   <!-- Auth Modal -->
-  <div id="authModal" style="display: none;" class="auth-modal">
+  <div id="authModal" class="auth-modal" style="display:none;">
     <div class="auth-box">
       <h2>Register or Sign In</h2>
       <input type="email" id="authEmail" placeholder="Email" />
@@ -46,46 +46,6 @@
     </div>
   </div>
 
-  <!-- Hero Sections -->
+  <!-- Feature Sections -->
   <main>
     <section class="feature" data-aos="fade-up">
-      <div class="feature-image">
-        <img src="images/look1.jpg" alt="Statement Look" />
-      </div>
-      <div class="feature-text">
-        <h2>Statement Pieces</h2>
-        <p>Discover bold silhouettes, volume, and details that make a difference — the must-have pieces to elevate your wardrobe this season.</p>
-        <a href="new.html" class="btn">Shop New</a>
-      </div>
-    </section>
-
-    <section class="feature" data-aos="fade-up">
-      <div class="feature-image">
-        <img src="images/look2.jpg" alt="Preloved Finds" />
-      </div>
-      <div class="feature-text">
-        <h2>Preloved Finds</h2>
-        <p>From classic staples to rare gems, explore our handpicked preloved collection — sustainability meets personal style.</p>
-        <a href="#" class="btn">Browse Preloved</a>
-      </div>
-    </section>
-
-    <section class="feature" data-aos="fade-up">
-      <div class="feature-image">
-        <img src="images/look3.jpg" alt="Wardrobe Staples" />
-      </div>
-      <div class="feature-text">
-        <h2>Everyday Staples</h2>
-        <p>Build a versatile capsule wardrobe with high-quality, neutral-toned essentials designed for every body and every day.</p>
-        <a href="#" class="btn">Explore Staples</a>
-      </div>
-    </section>
-  </main>
-
-  <!-- Firebase + AOS + Logic -->
-  <script src="firebase.js"></script>
-  <script src="script.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init();</script>
-</body>
-</html>
