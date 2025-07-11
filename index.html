@@ -132,9 +132,14 @@
     const db = firebase.firestore();
 
     function toggleRegisterModal() {
-      document.getElementById("registerModal").style.display = "flex";
-      document.getElementById("signInModal").style.display = "none";
-    }
+  const modal = document.getElementById("registerModal");
+  if (modal.style.display === "flex") {
+    modal.style.display = "none";
+  } else {
+    modal.style.display = "flex";
+    document.getElementById("signInModal").style.display = "none";
+  }
+}
 
     function toggleSignInModal() {
       const modal = document.getElementById("signInModal");
