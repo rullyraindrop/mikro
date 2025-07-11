@@ -103,5 +103,77 @@
 
   <!-- ✅ Your custom logic -->
   <script src="script.js"></script>
+<!-- Registration Modal Page -->
+<div id="registerModal" class="auth-modal" style="display: none;">
+  <div class="auth-box">
+    <h2>Register Account</h2>
+    <input type="text" id="regUsername" placeholder="Username" required />
+    <input type="email" id="regEmail" placeholder="Email" required />
+    <input type="password" id="regPassword" placeholder="Password" required />
+
+    <h3>Address</h3>
+    <input type="text" id="regProvince" placeholder="Province" required />
+    <input type="text" id="regCity" placeholder="City" required />
+    <input type="text" id="regKecamatan" placeholder="Kecamatan" required />
+    <input type="text" id="regPostalCode" placeholder="Postal Code" required />
+    <textarea id="regFullAddress" placeholder="Full Address" rows="3" required></textarea>
+
+    <button onclick="registerUser()">Register</button>
+    <button onclick="toggleRegisterModal()">Cancel</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+<script>
+const db = firebase.firestore();
+
+function toggleRegisterModal() {
+  const modal = document.getElementById("registerModal");
+  modal.style.display = modal.style.display === "none" ? "flex" : "none";
+}
+
+function registerUser() {
+  const email = document.getElementById("regEmail").value.trim();
+  const password = document.getElementById("regPassword").value;
+  const username = document.getElementById("regUsername").value.trim();
+
+  const province = document.getElementById("regProvince").value;
+  const city = document.getElementById("regCity").value;
+  const kecamatan = document.getElementById("regKecamatan").value;
+  const postal = document.getElementById("regPostalCode").value;
+  const fullAddress = document.getElementById("regFullAddress").value;
+
+  if (!email.includes("@") || !email.includes(".")) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      const user = userCredential.user;
+      user.sendEmailVerification();
+
+      // Save user data to Firestore
+      return db.collection("users").doc(user.uid).set({
+        username: username,
+        email: email,
+        address: {
+          province: province,
+          city: city,
+          kecamatan: kecamatan,
+          postalCode: postal,
+          fullAddress: fullAddress
+        },
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    })
+    .then(() => {
+      alert("Registration successful! Please check your email for verification.");
+      toggleRegisterModal();
+    })
+    .catch(error => alert(error.message));
+}
+</script>
+
 </body>
 </html>
