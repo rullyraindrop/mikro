@@ -7,9 +7,9 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js"></script>
+  <!-- ✅ Correct Firebase SDKs for HTML/JS (NOT modules) -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -82,7 +82,7 @@
     </section>
   </main>
 
-  <!-- Firebase Config -->
+  <!-- ✅ Firebase Config -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAIZJ65vfJX-KWMS0hb05-WWhudMSsz-_c",
@@ -101,7 +101,7 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init();</script>
 
-  <!-- Your script -->
+  <!-- ✅ Your custom logic -->
   <script src="script.js"></script>
 </body>
 </html>
