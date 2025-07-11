@@ -51,6 +51,15 @@
     </div>
   </div>
 
+  <!-- Verification Notice Modal -->
+  <div id="verifyNotice" class="auth-modal" style="display:none;">
+    <div class="auth-box">
+      <h2>Verify Your Email</h2>
+      <p>We have sent a verification link to your email address. Please check your inbox and verify your email to activate your account.</p>
+      <button onclick="closeVerifyNotice()">Back to Home</button>
+    </div>
+  </div>
+
   <main>
     <section class="feature" data-aos="fade-up">
       <div class="feature-image">
@@ -106,6 +115,11 @@
       modal.style.display = modal.style.display === "none" ? "flex" : "none";
     }
 
+    function closeVerifyNotice() {
+      document.getElementById("verifyNotice").style.display = "none";
+      window.location.href = "index.html";
+    }
+
     function registerUser() {
       const email = document.getElementById("regEmail").value.trim();
       const password = document.getElementById("regPassword").value;
@@ -125,9 +139,9 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
-          user.sendEmailVerification();
 
-          return db.collection("users").doc(user.uid).set({
+          // Store user data in Firestore
+          db.collection("users").doc(user.uid).set({
             username: username,
             email: email,
             address: {
@@ -139,10 +153,14 @@
             },
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-        })
-        .then(() => {
-          alert("Registration successful! Please check your email for verification.");
-          toggleRegisterModal();
+
+          // Send verification email
+          user.sendEmailVerification({
+            url: window.location.origin + "/index.html"
+          }).then(() => {
+            toggleRegisterModal();
+            document.getElementById("verifyNotice").style.display = "flex";
+          });
         })
         .catch(error => alert(error.message));
     }
