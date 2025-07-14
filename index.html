@@ -211,6 +211,10 @@
     }
 
     // ✅ DOM READY WRAPPER TO UPDATE UI ON LOGIN STATE
+<!-- This button goes inside the BODY, not inside <script> -->
+<button onclick="signInWithGoogle()">Sign in with Google</button>
+
+<script>
 auth.onAuthStateChanged(user => {
   const greeting = document.getElementById("userGreeting");
   const signInBtn = document.getElementById("signInBtn");
@@ -220,7 +224,7 @@ auth.onAuthStateChanged(user => {
   if (user && user.emailVerified) {
     db.collection("users").doc(user.uid).get().then(doc => {
       const username = doc.exists ? doc.data().username : user.displayName || user.email;
-      greeting.textContent = Welcome, ${username};
+      greeting.textContent = `Welcome, ${username}`;
     });
 
     greeting.style.display = "inline";
@@ -233,13 +237,23 @@ auth.onAuthStateChanged(user => {
     profileTab.style.display = "none";
   }
 });
-<button onclick="signInWithGoogle()">Sign in with Google</button>
 
-  </script>
+// Google sign-in logic
+function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(result => {
+      alert("Signed in with Google!");
+      location.reload();
+    })
+    .catch(error => alert(error.message));
+}
+</script>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init();</script>
-  <script src="script.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init();</script>
+<script src="script.js"></script>
+
 
 </body>
 </html>
