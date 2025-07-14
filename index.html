@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mikro Store - Home</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
   <link rel="icon" type="image/png" href="logo.png" />
@@ -13,60 +12,107 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
 </head>
 <body>
   <header>
-    <div class="header-left">
-      <div id="profileIcon" style="display: none;">
-        <div class="profile-container" onclick="toggleProfileMenu()">
-          <img id="userPhoto" src="default-user.png" alt="Profile" class="profile-icon" />
-          <div id="profileMenu" class="profile-menu hidden">
-            <a href="#" onclick="showEditProfile()"><i class="fas fa-user-edit"></i> Edit Profile</a>
-            <a href="#" onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-          </div>
-        </div>
-      </div>
+    <div class="header-center">
       <a href="index.html">
         <img src="logo.png" alt="Mikro Logo" class="logo" />
       </a>
-    </div>
-    
-    <div class="header-center">
       <h1>Mikro Store</h1>
     </div>
-    
     <div class="header-right">
       <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
+      <div id="userGreeting" style="display: none;"></div>
       <button id="signInBtn" class="btn small" onclick="toggleSignInModal()">Sign In</button>
+      <div id="profileTab" style="display: none;">
+        <img id="userPhoto" src="default-user.png" alt="Profile" class="profile-icon" onclick="toggleProfileMenu()" />
+        <div id="profileMenu" class="profile-menu hidden">
+          <a href="#">Edit Profile</a>
+          <a href="#">Purchase History</a>
+          <a href="#" onclick="deleteAccount()">Delete Account</a>
+          <a href="#" onclick="signOutUser()">Sign Out</a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- Rest of your HTML remains the same until the modals -->
+  <nav class="category-nav">
+    <a href="index.html" class="active">Home</a>
+    <a href="new.html">New</a>
+    <a href="#">Shop</a>
+    <a href="#">Preloved</a>
+  </nav>
 
-  <!-- Edit Profile Modal -->
-  <div id="editProfileModal" class="auth-modal" style="display: none;">
+  <!-- Sign In Modal -->
+  <div id="signInModal" class="auth-modal" style="display: none;">
     <div class="auth-box">
-      <h2>Edit Profile</h2>
-      <div class="profile-picture-container">
-        <img id="editProfilePhoto" src="default-user.png" alt="Profile" class="profile-picture" />
-        <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;" />
-        <button onclick="document.getElementById('profilePhotoInput').click()">Change Photo</button>
-      </div>
-      
-      <input type="text" id="editUsername" placeholder="Username" required />
-      
-      <h3>Address</h3>
-      <input type="text" id="editProvince" placeholder="Province" required />
-      <input type="text" id="editCity" placeholder="City" required />
-      <input type="text" id="editKecamatan" placeholder="Kecamatan" required />
-      <input type="text" id="editPostalCode" placeholder="Postal Code" required />
-      <textarea id="editFullAddress" placeholder="Full Address" rows="3" required></textarea>
-
-      <button onclick="updateProfile()">Save Changes</button>
-      <button onclick="hideEditProfile()">Cancel</button>
+      <h2>Sign In</h2>
+      <input type="email" id="signInEmail" placeholder="Email" required />
+      <input type="password" id="signInPassword" placeholder="Password" required />
+      <button onclick="signInUser()">Sign In</button>
+      <button onclick="signInWithGoogle()" class="google-btn">Sign in with Google</button>
+      <p style="margin-top: 15px;">Don't have an account? Register below now!</p>
+      <button onclick="toggleRegisterModal()">Register</button>
+      <button onclick="toggleSignInModal()">Close</button>
     </div>
   </div>
+
+  <!-- Registration Modal -->
+  <div id="registerModal" class="auth-modal" style="display: none;">
+    <div class="auth-box">
+      <h2>Register Account</h2>
+      <input type="text" id="regUsername" placeholder="Username" required />
+      <input type="email" id="regEmail" placeholder="Email" required />
+      <input type="password" id="regPassword" placeholder="Password" required />
+
+      <h3>Address</h3>
+      <input type="text" id="regProvince" placeholder="Province" required />
+      <input type="text" id="regCity" placeholder="City" required />
+      <input type="text" id="regKecamatan" placeholder="Kecamatan" required />
+      <input type="text" id="regPostalCode" placeholder="Postal Code" required />
+      <textarea id="regFullAddress" placeholder="Full Address" rows="3" required></textarea>
+
+      <button onclick="registerUser()">Register</button>
+      <button onclick="toggleRegisterModal()">Cancel</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Feature sections -->
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look1.jpg" alt="Statement Look" />
+      </div>
+      <div class="feature-text">
+        <h2>Statement Pieces</h2>
+        <p>Discover bold silhouettes, volume, and details that make a difference — the must-have pieces to elevate your wardrobe this season.</p>
+        <a href="new.html" class="btn">Shop New</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look2.jpg" alt="Preloved Finds" />
+      </div>
+      <div class="feature-text">
+        <h2>Preloved Finds</h2>
+        <p>From classic staples to rare gems, explore our handpicked preloved collection — sustainability meets personal style.</p>
+        <a href="#" class="btn">Browse Preloved</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look3.jpg" alt="Wardrobe Staples" />
+      </div>
+      <div class="feature-text">
+        <h2>Everyday Staples</h2>
+        <p>Build a versatile capsule wardrobe with high-quality, neutral-toned essentials designed for every body and every day.</p>
+        <a href="#" class="btn">Explore Staples</a>
+      </div>
+    </section>
+  </main>
 
   <!-- Firebase Config & Auth Logic -->
   <script>
@@ -84,135 +130,113 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
-    // Profile Menu Functions
+    // Authentication functions
+    function toggleRegisterModal() {
+      const modal = document.getElementById("registerModal");
+      if (modal.style.display === "flex") {
+        modal.style.display = "none";
+      } else {
+        modal.style.display = "flex";
+        document.getElementById("signInModal").style.display = "none";
+      }
+    }
+
+    function toggleSignInModal() {
+      const modal = document.getElementById("signInModal");
+      modal.style.display = modal.style.display === "none" ? "flex" : "none";
+    }
+
+    function registerUser() {
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const username = document.getElementById("regUsername").value.trim();
+      const province = document.getElementById("regProvince").value;
+      const city = document.getElementById("regCity").value;
+      const kecamatan = document.getElementById("regKecamatan").value;
+      const postal = document.getElementById("regPostalCode").value;
+      const fullAddress = document.getElementById("regFullAddress").value;
+
+      if (!email.includes("@") || !email.includes(".")) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password should be at least 6 characters");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          return db.collection("users").doc(user.uid).set({
+            username,
+            email,
+            address: { province, city, kecamatan, postalCode: postal, fullAddress },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(() => user.sendEmailVerification({ url: window.location.origin + "/index.html" }));
+        })
+        .then(() => {
+          document.getElementById("registerModal").style.display = "none";
+          alert("Verification email sent. Please check your inbox.");
+        })
+        .catch(error => alert(error.message));
+    }
+
+    function signInUser() {
+      const email = document.getElementById("signInEmail").value.trim();
+      const password = document.getElementById("signInPassword").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Signed in successfully");
+          toggleSignInModal();
+        })
+        .catch(error => alert(error.message));
+    }
+
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => {
+          alert("Signed in with Google successfully");
+          toggleSignInModal();
+        })
+        .catch(error => alert(error.message));
+    }
+
     function toggleProfileMenu() {
       document.getElementById("profileMenu").classList.toggle("hidden");
     }
 
-    function showEditProfile() {
+    function deleteAccount() {
       const user = auth.currentUser;
-      if (!user) return;
-      
-      // Close profile menu
-      document.getElementById("profileMenu").classList.add("hidden");
-      
-      // Load current data
-      db.collection("users").doc(user.uid).get().then(doc => {
-        if (doc.exists) {
-          const userData = doc.data();
-          document.getElementById("editUsername").value = userData.username || "";
-          document.getElementById("editProvince").value = userData.address?.province || "";
-          document.getElementById("editCity").value = userData.address?.city || "";
-          document.getElementById("editKecamatan").value = userData.address?.kecamatan || "";
-          document.getElementById("editPostalCode").value = userData.address?.postalCode || "";
-          document.getElementById("editFullAddress").value = userData.address?.fullAddress || "";
-          
-          // Set profile photo
-          const photoUrl = user.photoURL || "default-user.png";
-          document.getElementById("editProfilePhoto").src = photoUrl;
-          
-          // Show modal
-          document.getElementById("editProfileModal").style.display = "flex";
-        }
-      });
-    }
-
-    function hideEditProfile() {
-      document.getElementById("editProfileModal").style.display = "none";
-    }
-
-    // Handle profile photo upload
-    document.getElementById("profilePhotoInput").addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        document.getElementById("editProfilePhoto").src = event.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    function updateProfile() {
-      const user = auth.currentUser;
-      if (!user) return;
-      
-      const username = document.getElementById("editUsername").value.trim();
-      const province = document.getElementById("editProvince").value;
-      const city = document.getElementById("editCity").value;
-      const kecamatan = document.getElementById("editKecamatan").value;
-      const postalCode = document.getElementById("editPostalCode").value;
-      const fullAddress = document.getElementById("editFullAddress").value;
-      const fileInput = document.getElementById("profilePhotoInput");
-      
-      // Update Firestore data
-      const updates = {
-        username,
-        address: { province, city, kecamatan, postalCode, fullAddress },
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      
-      // Handle profile photo upload if selected
-      if (fileInput.files[0]) {
-        const storageRef = storage.ref(`profile_photos/${user.uid}`);
-        const uploadTask = storageRef.put(fileInput.files[0]);
-        
-        uploadTask.then(snapshot => {
-          return snapshot.ref.getDownloadURL();
-        }).then(downloadURL => {
-          // Update user's photoURL in Firebase Auth
-          return user.updateProfile({
-            photoURL: downloadURL
-          }).then(() => {
-            // Also store the URL in Firestore
-            updates.photoURL = downloadURL;
-            return db.collection("users").doc(user.uid).update(updates);
-          });
-        }).then(() => {
-          alert("Profile updated successfully!");
-          hideEditProfile();
-          updateUI(user);
-        }).catch(error => {
-          alert("Error updating profile: " + error.message);
-        });
-      } else {
-        // No photo to update, just update other info
-        db.collection("users").doc(user.uid).update(updates)
+      if (confirm("Are you sure you want to delete your account?")) {
+        db.collection("users").doc(user.uid).delete()
+          .then(() => user.delete())
           .then(() => {
-            alert("Profile updated successfully!");
-            hideEditProfile();
-            updateUI(user);
+            alert("Account deleted");
+            window.location.reload();
           })
-          .catch(error => {
-            alert("Error updating profile: " + error.message);
-          });
+          .catch(error => alert(error.message));
       }
     }
 
-    // Update UI based on auth state
-    function updateUI(user) {
-      const profileIcon = document.getElementById("profileIcon");
-      const signInBtn = document.getElementById("signInBtn");
-      
-      if (user) {
-        // User is signed in
-        profileIcon.style.display = "block";
-        signInBtn.style.display = "none";
-        
-        // Set profile photo
-        const photoUrl = user.photoURL || "default-user.png";
-        document.getElementById("userPhoto").src = photoUrl;
-      } else {
-        // User is signed out
-        profileIcon.style.display = "none";
-        signInBtn.style.display = "inline-block";
-      }
+    function signOutUser() {
+      auth.signOut().then(() => {
+        alert("Signed out");
+        window.location.reload();
+      });
     }
 
     // Auth state listener
     auth.onAuthStateChanged(user => {
+      const greeting = document.getElementById("userGreeting");
+      const signInBtn = document.getElementById("signInBtn");
+      const profileTab = document.getElementById("profileTab");
+      const userPhoto = document.getElementById("userPhoto");
+
       if (user) {
         // Check if email is verified
         if (!user.emailVerified) {
@@ -220,15 +244,25 @@
           auth.signOut();
           return;
         }
-        
-        updateUI(user);
+
+        // Get user data from Firestore
+        db.collection("users").doc(user.uid).get().then(doc => {
+          const username = doc.exists ? doc.data().username : user.displayName || user.email;
+          greeting.textContent = `Welcome, ${username}`;
+        });
+
+        greeting.style.display = "inline";
+        signInBtn.style.display = "none";
+        profileTab.style.display = "flex";
+        if (user.photoURL) {
+          userPhoto.src = user.photoURL;
+        }
       } else {
-        updateUI(null);
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
       }
     });
-
-    // Rest of your auth functions (signInUser, signInWithGoogle, etc.) remain the same
-    // ...
   </script>
 
   <!-- External Scripts -->
