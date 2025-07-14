@@ -1,8 +1,24 @@
-<!-- ... same <head> as before ... -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mikro Store - Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+</head>
 <body>
   <header>
     <div class="header-center">
-      <a href="index.html"><img src="logo.png" alt="Mikro Logo" class="logo" /></a>
+      <a href="index.html">
+        <img src="logo.png" alt="Mikro Logo" class="logo" />
+      </a>
       <h1>Mikro Store</h1>
     </div>
     <div class="header-right">
@@ -28,48 +44,76 @@
     <a href="#">Preloved</a>
   </nav>
 
-  <!-- 🔒 Sign In Modal -->
+  <!-- Sign In Modal -->
   <div id="signInModal" class="auth-modal" style="display: none;">
     <div class="auth-box">
       <h2>Sign In</h2>
       <input type="email" id="signInEmail" placeholder="Email" required />
       <input type="password" id="signInPassword" placeholder="Password" required />
       <button onclick="signInUser()">Sign In</button>
-      <button onclick="signInWithGoogle()">Sign in with Google</button> <!-- ✅ valid location -->
       <p style="margin-top: 15px;">Don't have an account? Register below now!</p>
       <button onclick="toggleRegisterModal()">Register</button>
       <button onclick="toggleSignInModal()">Close</button>
     </div>
   </div>
 
-  <!-- 🔐 Register Modal -->
+  <!-- Registration Modal -->
   <div id="registerModal" class="auth-modal" style="display: none;">
     <div class="auth-box">
       <h2>Register Account</h2>
       <input type="text" id="regUsername" placeholder="Username" required />
       <input type="email" id="regEmail" placeholder="Email" required />
       <input type="password" id="regPassword" placeholder="Password" required />
+
       <h3>Address</h3>
       <input type="text" id="regProvince" placeholder="Province" required />
       <input type="text" id="regCity" placeholder="City" required />
       <input type="text" id="regKecamatan" placeholder="Kecamatan" required />
       <input type="text" id="regPostalCode" placeholder="Postal Code" required />
       <textarea id="regFullAddress" placeholder="Full Address" rows="3" required></textarea>
+
       <button onclick="registerUser()">Register</button>
       <button onclick="toggleRegisterModal()">Cancel</button>
     </div>
   </div>
 
-  <!-- 🔽 Main Section -->
   <main>
-    <!-- same features content -->
+    <!-- Feature sections -->
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look1.jpg" alt="Statement Look" />
+      </div>
+      <div class="feature-text">
+        <h2>Statement Pieces</h2>
+        <p>Discover bold silhouettes, volume, and details that make a difference — the must-have pieces to elevate your wardrobe this season.</p>
+        <a href="new.html" class="btn">Shop New</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look2.jpg" alt="Preloved Finds" />
+      </div>
+      <div class="feature-text">
+        <h2>Preloved Finds</h2>
+        <p>From classic staples to rare gems, explore our handpicked preloved collection — sustainability meets personal style.</p>
+        <a href="#" class="btn">Browse Preloved</a>
+      </div>
+    </section>
+
+    <section class="feature" data-aos="fade-up">
+      <div class="feature-image">
+        <img src="images/look3.jpg" alt="Wardrobe Staples" />
+      </div>
+      <div class="feature-text">
+        <h2>Everyday Staples</h2>
+        <p>Build a versatile capsule wardrobe with high-quality, neutral-toned essentials designed for every body and every day.</p>
+        <a href="#" class="btn">Explore Staples</a>
+      </div>
+    </section>
   </main>
 
-  <!-- ✅ Scripts -->
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init();</script>
-
-  <!-- ✅ Firebase Auth & Firestore -->
+  <!-- Firebase Config & Auth Logic -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
@@ -87,8 +131,12 @@
 
     function toggleRegisterModal() {
       const modal = document.getElementById("registerModal");
-      modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-      document.getElementById("signInModal").style.display = "none";
+      if (modal.style.display === "flex") {
+        modal.style.display = "none";
+      } else {
+        modal.style.display = "flex";
+        document.getElementById("signInModal").style.display = "none";
+      }
     }
 
     function toggleSignInModal() {
@@ -114,16 +162,11 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           const user = userCredential.user;
-          return user.updateProfile({
-            displayName: username,
-            photoURL: "default-user.png"
-          }).then(() => {
-            return db.collection("users").doc(user.uid).set({
-              username,
-              email,
-              address: { province, city, kecamatan, postalCode: postal, fullAddress },
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+          return db.collection("users").doc(user.uid).set({
+            username,
+            email,
+            address: { province, city, kecamatan, postalCode: postal, fullAddress },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
           }).then(() => user.sendEmailVerification({ url: window.location.origin + "/index.html" }));
         })
         .then(() => {
@@ -143,26 +186,6 @@
           toggleSignInModal();
         })
         .catch(error => alert(error.message));
-    }
-
-    function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(async result => {
-          const user = result.user;
-          const userRef = db.collection("users").doc(user.uid);
-          const doc = await userRef.get();
-          if (!doc.exists) {
-            await userRef.set({
-              username: user.displayName,
-              email: user.email,
-              photoURL: user.photoURL,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-          }
-          alert("Signed in with Google");
-        })
-        .catch(error => alert("Google Sign-In failed: " + error.message));
     }
 
     function toggleProfileMenu() {
@@ -187,30 +210,36 @@
       });
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      auth.onAuthStateChanged(user => {
-        const greeting = document.getElementById("userGreeting");
-        const signInBtn = document.getElementById("signInBtn");
-        const profileTab = document.getElementById("profileTab");
-        const userPhoto = document.getElementById("userPhoto");
+    // ✅ DOM READY WRAPPER TO UPDATE UI ON LOGIN STATE
+auth.onAuthStateChanged(user => {
+  const greeting = document.getElementById("userGreeting");
+  const signInBtn = document.getElementById("signInBtn");
+  const profileTab = document.getElementById("profileTab");
+  const userPhoto = document.getElementById("userPhoto");
 
-        if (user && user.emailVerified) {
-          db.collection("users").doc(user.uid).get().then(doc => {
-            const username = doc.exists ? doc.data().username : user.displayName || user.email;
-            greeting.textContent = `Welcome, ${username}`;
-          });
-
-          greeting.style.display = "inline";
-          signInBtn.style.display = "none";
-          profileTab.style.display = "flex";
-          if (userPhoto) userPhoto.src = user.photoURL || "default-user.png";
-        } else {
-          greeting.style.display = "none";
-          signInBtn.style.display = "inline";
-          profileTab.style.display = "none";
-        }
-      });
+  if (user && user.emailVerified) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      const username = doc.exists ? doc.data().username : user.displayName || user.email;
+      greeting.textContent = Welcome, ${username};
     });
+
+    greeting.style.display = "inline";
+    signInBtn.style.display = "none";
+    profileTab.style.display = "flex";
+    if (userPhoto) userPhoto.src = user.photoURL || "default-user.png";
+  } else {
+    greeting.style.display = "none";
+    signInBtn.style.display = "inline";
+    profileTab.style.display = "none";
+  }
+});
+<button onclick="signInWithGoogle()">Sign in with Google</button>
+
   </script>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init();</script>
+  <script src="script.js"></script>
+
 </body>
 </html>
