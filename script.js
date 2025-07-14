@@ -142,30 +142,6 @@
       }
     });
   });
-auth.onAuthStateChanged(user => {
-  const greeting = document.getElementById("userGreeting");
-  const signInBtn = document.getElementById("signInBtn");
-  const profileTab = document.getElementById("profileTab");
-  const userPhoto = document.getElementById("userPhoto");
 
-  if (user && user.emailVerified) {
-    db.collection("users").doc(user.uid).get().then(doc => {
-      const username = doc.exists ? doc.data().username : (user.displayName || user.email);
-      greeting.textContent = `Welcome, ${username}`;
-    });
-
-    greeting.style.display = "inline";
-    signInBtn.style.display = "none";
-    profileTab.style.display = "flex";
-
-    if (userPhoto) {
-      userPhoto.src = user.photoURL || "default-user.png";
-    }
-  } else {
-    greeting.style.display = "none";
-    signInBtn.style.display = "inline";
-    profileTab.style.display = "none";
-  }
-});
 
 </script>
