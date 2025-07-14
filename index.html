@@ -1,60 +1,241 @@
-/* Profile Icon Styles */
-.profile-container {
-  position: relative;
-  cursor: pointer;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mikro Store - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
 
-.profile-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-}
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div id="profileIcon" style="display: none;">
+        <div class="profile-container" onclick="toggleProfileMenu()">
+          <img id="userPhoto" src="default-user.png" alt="Profile" class="profile-icon" />
+          <div id="profileMenu" class="profile-menu hidden">
+            <a href="#" onclick="showEditProfile()"><i class="fas fa-user-edit"></i> Edit Profile</a>
+            <a href="#" onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+          </div>
+        </div>
+      </div>
+      <a href="index.html">
+        <img src="logo.png" alt="Mikro Logo" class="logo" />
+      </a>
+    </div>
+    
+    <div class="header-center">
+      <h1>Mikro Store</h1>
+    </div>
+    
+    <div class="header-right">
+      <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
+      <button id="signInBtn" class="btn small" onclick="toggleSignInModal()">Sign In</button>
+    </div>
+  </header>
 
-.profile-menu {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 100;
-  min-width: 180px;
-}
+  <!-- Rest of your HTML remains the same until the modals -->
 
-.profile-menu.hidden {
-  display: none;
-}
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="auth-modal" style="display: none;">
+    <div class="auth-box">
+      <h2>Edit Profile</h2>
+      <div class="profile-picture-container">
+        <img id="editProfilePhoto" src="default-user.png" alt="Profile" class="profile-picture" />
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;" />
+        <button onclick="document.getElementById('profilePhotoInput').click()">Change Photo</button>
+      </div>
+      
+      <input type="text" id="editUsername" placeholder="Username" required />
+      
+      <h3>Address</h3>
+      <input type="text" id="editProvince" placeholder="Province" required />
+      <input type="text" id="editCity" placeholder="City" required />
+      <input type="text" id="editKecamatan" placeholder="Kecamatan" required />
+      <input type="text" id="editPostalCode" placeholder="Postal Code" required />
+      <textarea id="editFullAddress" placeholder="Full Address" rows="3" required></textarea>
 
-.profile-menu a {
-  display: block;
-  padding: 10px 15px;
-  color: #333;
-  text-decoration: none;
-}
+      <button onclick="updateProfile()">Save Changes</button>
+      <button onclick="hideEditProfile()">Cancel</button>
+    </div>
+  </div>
 
-.profile-menu a:hover {
-  background: #f5f5f5;
-}
+  <!-- Firebase Config & Auth Logic -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
+      authDomain: "mikro-c8998.firebaseapp.com",
+      projectId: "mikro-c8998",
+      storageBucket: "mikro-c8998.appspot.com",
+      messagingSenderId: "180409134328",
+      appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+      measurementId: "G-QEXHW4F7PV"
+    };
 
-.profile-menu i {
-  margin-right: 8px;
-  width: 20px;
-  text-align: center;
-}
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
-/* Edit Profile Modal Styles */
-.profile-picture-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    // Profile Menu Functions
+    function toggleProfileMenu() {
+      document.getElementById("profileMenu").classList.toggle("hidden");
+    }
 
-.profile-picture {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 10px;
-}
+    function showEditProfile() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      // Close profile menu
+      document.getElementById("profileMenu").classList.add("hidden");
+      
+      // Load current data
+      db.collection("users").doc(user.uid).get().then(doc => {
+        if (doc.exists) {
+          const userData = doc.data();
+          document.getElementById("editUsername").value = userData.username || "";
+          document.getElementById("editProvince").value = userData.address?.province || "";
+          document.getElementById("editCity").value = userData.address?.city || "";
+          document.getElementById("editKecamatan").value = userData.address?.kecamatan || "";
+          document.getElementById("editPostalCode").value = userData.address?.postalCode || "";
+          document.getElementById("editFullAddress").value = userData.address?.fullAddress || "";
+          
+          // Set profile photo
+          const photoUrl = user.photoURL || "default-user.png";
+          document.getElementById("editProfilePhoto").src = photoUrl;
+          
+          // Show modal
+          document.getElementById("editProfileModal").style.display = "flex";
+        }
+      });
+    }
+
+    function hideEditProfile() {
+      document.getElementById("editProfileModal").style.display = "none";
+    }
+
+    // Handle profile photo upload
+    document.getElementById("profilePhotoInput").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        document.getElementById("editProfilePhoto").src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function updateProfile() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      const username = document.getElementById("editUsername").value.trim();
+      const province = document.getElementById("editProvince").value;
+      const city = document.getElementById("editCity").value;
+      const kecamatan = document.getElementById("editKecamatan").value;
+      const postalCode = document.getElementById("editPostalCode").value;
+      const fullAddress = document.getElementById("editFullAddress").value;
+      const fileInput = document.getElementById("profilePhotoInput");
+      
+      // Update Firestore data
+      const updates = {
+        username,
+        address: { province, city, kecamatan, postalCode, fullAddress },
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      // Handle profile photo upload if selected
+      if (fileInput.files[0]) {
+        const storageRef = storage.ref(`profile_photos/${user.uid}`);
+        const uploadTask = storageRef.put(fileInput.files[0]);
+        
+        uploadTask.then(snapshot => {
+          return snapshot.ref.getDownloadURL();
+        }).then(downloadURL => {
+          // Update user's photoURL in Firebase Auth
+          return user.updateProfile({
+            photoURL: downloadURL
+          }).then(() => {
+            // Also store the URL in Firestore
+            updates.photoURL = downloadURL;
+            return db.collection("users").doc(user.uid).update(updates);
+          });
+        }).then(() => {
+          alert("Profile updated successfully!");
+          hideEditProfile();
+          updateUI(user);
+        }).catch(error => {
+          alert("Error updating profile: " + error.message);
+        });
+      } else {
+        // No photo to update, just update other info
+        db.collection("users").doc(user.uid).update(updates)
+          .then(() => {
+            alert("Profile updated successfully!");
+            hideEditProfile();
+            updateUI(user);
+          })
+          .catch(error => {
+            alert("Error updating profile: " + error.message);
+          });
+      }
+    }
+
+    // Update UI based on auth state
+    function updateUI(user) {
+      const profileIcon = document.getElementById("profileIcon");
+      const signInBtn = document.getElementById("signInBtn");
+      
+      if (user) {
+        // User is signed in
+        profileIcon.style.display = "block";
+        signInBtn.style.display = "none";
+        
+        // Set profile photo
+        const photoUrl = user.photoURL || "default-user.png";
+        document.getElementById("userPhoto").src = photoUrl;
+      } else {
+        // User is signed out
+        profileIcon.style.display = "none";
+        signInBtn.style.display = "inline-block";
+      }
+    }
+
+    // Auth state listener
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Check if email is verified
+        if (!user.emailVerified) {
+          alert("Please verify your email address. Check your inbox.");
+          auth.signOut();
+          return;
+        }
+        
+        updateUI(user);
+      } else {
+        updateUI(null);
+      }
+    });
+
+    // Rest of your auth functions (signInUser, signInWithGoogle, etc.) remain the same
+    // ...
+  </script>
+
+  <!-- External Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
