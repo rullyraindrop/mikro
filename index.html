@@ -51,6 +51,7 @@
       <input type="email" id="signInEmail" placeholder="Email" required />
       <input type="password" id="signInPassword" placeholder="Password" required />
       <button onclick="signInUser()">Sign In</button>
+      <button onclick="signInWithGoogle()" class="google-btn">Sign in with Google</button>
       <p style="margin-top: 15px;">Don't have an account? Register below now!</p>
       <button onclick="toggleRegisterModal()">Register</button>
       <button onclick="toggleSignInModal()">Close</button>
@@ -125,10 +126,12 @@
       measurementId: "G-QEXHW4F7PV"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Authentication functions
     function toggleRegisterModal() {
       const modal = document.getElementById("registerModal");
       if (modal.style.display === "flex") {
@@ -156,6 +159,11 @@
 
       if (!email.includes("@") || !email.includes(".")) {
         alert("Please enter a valid email address.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password should be at least 6 characters");
         return;
       }
 
@@ -188,6 +196,16 @@
         .catch(error => alert(error.message));
     }
 
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => {
+          alert("Signed in with Google successfully");
+          toggleSignInModal();
+        })
+        .catch(error => alert(error.message));
+    }
+
     function toggleProfileMenu() {
       document.getElementById("profileMenu").classList.toggle("hidden");
     }
@@ -195,11 +213,13 @@
     function deleteAccount() {
       const user = auth.currentUser;
       if (confirm("Are you sure you want to delete your account?")) {
-        db.collection("users").doc(user.uid).delete();
-        user.delete().then(() => {
-          alert("Account deleted");
-          window.location.reload();
-        }).catch(error => alert(error.message));
+        db.collection("users").doc(user.uid).delete()
+          .then(() => user.delete())
+          .then(() => {
+            alert("Account deleted");
+            window.location.reload();
+          })
+          .catch(error => alert(error.message));
       }
     }
 
@@ -210,66 +230,46 @@
       });
     }
 
-    // ✅ DOM READY WRAPPER TO UPDATE UI ON LOGIN STATE
-<!-- This button goes inside the BODY, not inside <script> -->
-<button onclick="signInWithGoogle()">Sign in with Google</button>
+    // Auth state listener
+    auth.onAuthStateChanged(user => {
+      const greeting = document.getElementById("userGreeting");
+      const signInBtn = document.getElementById("signInBtn");
+      const profileTab = document.getElementById("profileTab");
+      const userPhoto = document.getElementById("userPhoto");
 
-<script>
-auth.onAuthStateChanged(user => {
-  const greeting = document.getElementById("userGreeting");
-  const signInBtn = document.getElementById("signInBtn");
-  const profileTab = document.getElementById("profileTab");
-  const userPhoto = document.getElementById("userPhoto");
+      if (user) {
+        // Check if email is verified
+        if (!user.emailVerified) {
+          alert("Please verify your email address. Check your inbox.");
+          auth.signOut();
+          return;
+        }
 
-  if (user && user.emailVerified) {
-    db.collection("users").doc(user.uid).get().then(doc => {
-      const username = doc.exists ? doc.data().username : user.displayName || user.email;
-      greeting.textContent = `Welcome, ${username}`;
+        // Get user data from Firestore
+        db.collection("users").doc(user.uid).get().then(doc => {
+          const username = doc.exists ? doc.data().username : user.displayName || user.email;
+          greeting.textContent = `Welcome, ${username}`;
+        });
+
+        greeting.style.display = "inline";
+        signInBtn.style.display = "none";
+        profileTab.style.display = "flex";
+        if (user.photoURL) {
+          userPhoto.src = user.photoURL;
+        }
+      } else {
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
+      }
     });
+  </script>
 
-    greeting.style.display = "inline";
-    signInBtn.style.display = "none";
-    profileTab.style.display = "flex";
-    if (userPhoto) userPhoto.src = user.photoURL || "default-user.png";
-  } else {
-    greeting.style.display = "none";
-    signInBtn.style.display = "inline";
-    profileTab.style.display = "none";
-  }
-});
-
-// Google sign-in logic
-function signInWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(result => {
-      alert("Signed in with Google!");
-      location.reload();
-    })
-    .catch(error => alert(error.message));
-}
-</script>
-<!-- Sign In Modal -->
-<div id="signInModal" class="auth-modal" style="display: none;">
-  <div class="auth-box">
-    <h2>Sign In</h2>
-    <input type="email" id="signInEmail" placeholder="Email" required />
-    <input type="password" id="signInPassword" placeholder="Password" required />
-    <button onclick="signInUser()">Sign In</button>
-
-    <!-- ✅ Correctly placed Google button -->
-    <button onclick="signInWithGoogle()">Sign in with Google</button>
-
-    <p style="margin-top: 15px;">Don't have an account? Register below now!</p>
-    <button onclick="toggleRegisterModal()">Register</button>
-    <button onclick="toggleSignInModal()">Close</button>
-  </div>
-</div>
-
-<!-- ✅ External Scripts at the Bottom -->
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>AOS.init();</script>
-<script src="script.js"></script>
-
+  <!-- External Scripts -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
