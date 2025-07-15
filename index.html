@@ -255,11 +255,18 @@
 
       if (user) {
         // Check if email is verified
-        if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-          alert("Please verify your email address. Check your inbox.");
-          auth.signOut();
-          return;
-        }
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+  const creationTime = new Date(user.metadata.creationTime).getTime();
+  const lastSignInTime = new Date(user.metadata.lastSignInTime).getTime();
+  const within5Minutes = (lastSignInTime - creationTime) < (5 * 60 * 1000); // 5 minutes
+
+  if (within5Minutes) {
+    alert("Please verify your email address. Check your inbox.");
+    auth.signOut();
+    return;
+  }
+}
+
 
         // Get user data from Firestore
         db.collection("users").doc(user.uid).get().then(doc => {
