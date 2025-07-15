@@ -17,12 +17,8 @@
   // Modal Toggle Functions
   function toggleRegisterModal() {
     const modal = document.getElementById("registerModal");
-    if (modal.style.display === "flex") {
-      modal.style.display = "none";
-    } else {
-      modal.style.display = "flex";
-      document.getElementById("signInModal").style.display = "none";
-    }
+    modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+    document.getElementById("signInModal").style.display = "none";
   }
 
   function toggleSignInModal() {
@@ -55,7 +51,6 @@
     auth.createUserWithEmailAndPassword(email, password)
       .then(userCredential => {
         const user = userCredential.user;
-        
         // Set display name and default photo
         return user.updateProfile({
           displayName: username,
@@ -66,20 +61,12 @@
             username,
             email,
             photoURL: "default-user.png",
-            address: { 
-              province, 
-              city, 
-              kecamatan, 
-              postalCode: postal, 
-              fullAddress 
-            },
+            address: { province, city, kecamatan, postalCode: postal, fullAddress },
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }).then(() => {
           // Send verification email
-          return user.sendEmailVerification({ 
-            url: window.location.origin + "/index.html" 
-          });
+          return user.sendEmailVerification({ url: window.location.origin + "/index.html" });
         });
       })
       .then(() => {
@@ -98,14 +85,13 @@
     const password = document.getElementById("signInPassword").value;
 
     auth.signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Check if email is verified for email/password users
-        if (userCredential.user.providerData[0].providerId === 'password' && 
-            !userCredential.user.emailVerified) {
-          auth.signOut();
+      .then(async userCredential => {
+        // Reload user to get latest emailVerified status
+        await userCredential.user.reload();
+        if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
+          await auth.signOut();
           throw new Error("Please verify your email address first. Check your inbox.");
         }
-        
         alert("Signed in successfully");
         toggleSignInModal();
       })
@@ -121,12 +107,10 @@
     auth.signInWithPopup(provider)
       .then(async result => {
         const user = result.user;
-        const userRef = db.collection("users").doc(user.uid);
-
         // Check if user exists in Firestore
+        const userRef = db.collection("users").doc(user.uid);
         const doc = await userRef.get();
         if (!doc.exists) {
-          // Create new user document if doesn't exist
           await userRef.set({
             username: user.displayName,
             email: user.email,
@@ -134,8 +118,8 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
-
         alert("Signed in with Google successfully");
+        toggleSignInModal();
       })
       .catch(error => {
         console.error("Google sign-in error:", error);
@@ -148,83 +132,89 @@
     const menu = document.getElementById("profileMenu");
     menu.style.display = menu.style.display === "block" ? "none" : "block";
   }
-
-  // Close profile menu when clicking outside
   document.addEventListener('click', function(event) {
     const profileContainer = document.querySelector('.profile-container');
     const profileMenu = document.getElementById("profileMenu");
-    
     if (!profileContainer.contains(event.target) && profileMenu.style.display === 'block') {
       profileMenu.style.display = 'none';
     }
   });
 
-  // Account Management
-  function deleteAccount() {
-    const user = auth.currentUser;
-    if (confirm("Are you sure you want to delete your account?")) {
-      // Delete from Firestore first
-      db.collection("users").doc(user.uid).delete()
-        .then(() => {
-          // Then delete auth account
-          return user.delete();
-        })
-        .then(() => {
-          alert("Account deleted");
-          window.location.reload();
-        })
-        .catch(error => {
-          console.error("Delete account error:", error);
-          alert(error.message);
-        });
-    }
-  }
+  // Authentication State Listener
+  auth.onAuthStateChanged(async user => {
+  const greeting = document.getElementById("userGreeting");
+  const signInBtn = document.getElementById("signInBtn");
+  const profileTab = document.getElementById("profileTab");
+  const userPhoto = document.getElementById("userPhoto");
 
-  function signOutUser() {
-    auth.signOut()
-      .then(() => {
-        alert("Signed out");
-        window.location.reload();
+  if (user) {
+    await user.reload();
+
+    if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+      alert("Please verify your email address. Check your inbox.");
+      await auth.signOut();
+      greeting.style.display = "none";
+      signInBtn.style.display = "inline";
+      profileTab.style.display = "none";
+      if (userPhoto) userPhoto.src = "default-user.png";
+      return;
+    }
+
+    db.collection("users").doc(user.uid).get()
+      .then(doc => {
+        const userData = doc.exists ? doc.data() : {};
+        const username = userData.username || user.displayName || user.email.split('@')[0];
+        greeting.textContent = `Welcome, ${username}`;
+        greeting.style.display = "inline";
+        signInBtn.style.display = "none";
+        profileTab.style.display = "flex";
+        userPhoto.src = user.photoURL || userData.photoURL || "default-user.png";
       })
       .catch(error => {
-        console.error("Sign out error:", error);
-        alert(error.message);
+        console.error("Failed to retrieve user data:", error);
       });
+  } else {
+    greeting.style.display = "none";
+    signInBtn.style.display = "inline";
+    profileTab.style.display = "none";
+    if (userPhoto) userPhoto.src = "default-user.png";
   }
-
-  // Authentication State Listener
-  auth.onAuthStateChanged(user => {
-    const greeting = document.getElementById("userGreeting");
+});
     const signInBtn = document.getElementById("signInBtn");
     const profileTab = document.getElementById("profileTab");
     const userPhoto = document.getElementById("userPhoto");
 
     if (user) {
-      // Get user data from Firestore
+      // Reload to get updated emailVerified
+      await user.reload();
+      // If email/password user not verified, sign out and notify
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+        alert("Please verify your email address. Check your inbox.");
+        await auth.signOut();
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
+        return;
+      }
+
+      // Fetch Firestore data
       db.collection("users").doc(user.uid).get()
         .then(doc => {
           const userData = doc.exists ? doc.data() : {};
-          
-          // Set greeting text
           const username = userData.username || user.displayName || user.email.split('@')[0];
           greeting.textContent = `Welcome, ${username}`;
-          
-          // Set profile picture (Google photo or default)
           userPhoto.src = user.photoURL || userData.photoURL || "default-user.png";
-          
-          // Update UI
           greeting.style.display = "inline";
           signInBtn.style.display = "none";
           profileTab.style.display = "flex";
         })
-        .catch(error => {
-          console.error("Error getting user data:", error);
-        });
+        .catch(error => console.error("Error getting user data:", error));
     } else {
-      // User signed out
+      // Signed out
       greeting.style.display = "none";
       signInBtn.style.display = "inline";
       profileTab.style.display = "none";
+      if (userPhoto) userPhoto.src = "default-user.png";
     }
   });
 </script>
