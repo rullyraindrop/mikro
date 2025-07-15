@@ -143,4 +143,80 @@
   // Authentication State Listener
   document.addEventListener("DOMContentLoaded", () => {
   auth.onAuthStateChanged(async user => {
-  
+    const greeting = document.getElementById("userGreeting");
+    const signInBtn = document.getElementById("signInBtn");
+    const profileTab = document.getElementById("profileTab");
+    const userPhoto = document.getElementById("userPhoto");
+
+    if (user) {
+      await user.reload();
+
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+        alert("Please verify your email address. Check your inbox.");
+        await auth.signOut();
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
+        if (userPhoto) userPhoto.src = "default-user.png";
+        return;
+      }
+
+      db.collection("users").doc(user.uid).get()
+        .then(doc => {
+          const userData = doc.exists ? doc.data() : {};
+          const username = userData.username || user.displayName || user.email.split('@')[0];
+          greeting.textContent = Welcome, ${username};
+          greeting.style.display = "inline";
+          signInBtn.style.display = "none";
+          profileTab.style.display = "flex";
+          userPhoto.src = user.photoURL || userData.photoURL || "default-user.png";
+        })
+        .catch(error => {
+          console.error("Failed to retrieve user data:", error);
+        });
+    } else {
+      greeting.style.display = "none";
+      signInBtn.style.display = "inline";
+      profileTab.style.display = "none";
+      if (userPhoto) userPhoto.src = "default-user.png";
+    }
+  });
+});
+    const signInBtn = document.getElementById("signInBtn");
+    const profileTab = document.getElementById("profileTab");
+    const userPhoto = document.getElementById("userPhoto");
+
+    if (user) {
+      // Reload to get updated emailVerified
+      await user.reload();
+      // If email/password user not verified, sign out and notify
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+        alert("Please verify your email address. Check your inbox.");
+        await auth.signOut();
+        greeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        profileTab.style.display = "none";
+        return;
+      }
+
+      // Fetch Firestore data
+      db.collection("users").doc(user.uid).get()
+        .then(doc => {
+          const userData = doc.exists ? doc.data() : {};
+          const username = userData.username || user.displayName || user.email.split('@')[0];
+          greeting.textContent = Welcome, ${username};
+          userPhoto.src = user.photoURL || userData.photoURL || "default-user.png";
+          greeting.style.display = "inline";
+          signInBtn.style.display = "none";
+          profileTab.style.display = "flex";
+        })
+        .catch(error => console.error("Error getting user data:", error));
+    } else {
+      // Signed out
+      greeting.style.display = "none";
+      signInBtn.style.display = "inline";
+      profileTab.style.display = "none";
+      if (userPhoto) userPhoto.src = "default-user.png";
+    }
+  });
+</script>
