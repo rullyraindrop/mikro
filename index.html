@@ -405,5 +405,69 @@
     AOS.init();
   </script>
   <script src="script.js"></script>
+<!-- ✅ BEGIN: Edit Profile Modal -->
+<div id="editProfileModal" class="auth-modal" style="display: none;">
+  <div class="auth-box">
+    <h2>Edit Profile</h2>
+    <input type="text" id="editUsername" placeholder="Username" />
+    <input type="text" id="editProvince" placeholder="Province" />
+    <input type="text" id="editCity" placeholder="City" />
+    <input type="text" id="editKecamatan" placeholder="Kecamatan" />
+    <input type="text" id="editPostalCode" placeholder="Postal Code" />
+    <textarea id="editFullAddress" placeholder="Full Address" rows="3"></textarea>
+    <button onclick="saveProfileChanges()">Save</button>
+    <button onclick="toggleEditProfileModal()">Cancel</button>
+  </div>
+</div>
+<!-- ✅ END: Edit Profile Modal -->
+
+<script>
+  function toggleEditProfileModal() {
+    const modal = document.getElementById("editProfileModal");
+    modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+
+    if (modal.style.display === "flex") {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+      firebase.firestore().collection("users").doc(user.uid).get()
+        .then(doc => {
+          const data = doc.data() || {};
+          document.getElementById("editUsername").value = data.username || "";
+          document.getElementById("editProvince").value = data.address?.province || "";
+          document.getElementById("editCity").value = data.address?.city || "";
+          document.getElementById("editKecamatan").value = data.address?.kecamatan || "";
+          document.getElementById("editPostalCode").value = data.address?.postalCode || "";
+          document.getElementById("editFullAddress").value = data.address?.fullAddress || "";
+        })
+        .catch(err => alert("Failed to load profile: " + err.message));
+    }
+  }
+
+  function saveProfileChanges() {
+    const user = firebase.auth().currentUser;
+    if (!user) return alert("No user logged in");
+
+    const username = document.getElementById("editUsername").value.trim();
+    const province = document.getElementById("editProvince").value.trim();
+    const city = document.getElementById("editCity").value.trim();
+    const kecamatan = document.getElementById("editKecamatan").value.trim();
+    const postalCode = document.getElementById("editPostalCode").value.trim();
+    const fullAddress = document.getElementById("editFullAddress").value.trim();
+
+    firebase.firestore().collection("users").doc(user.uid).update({
+      username,
+      address: { province, city, kecamatan, postalCode, fullAddress }
+    }).then(() => {
+      return user.updateProfile({ displayName: username });
+    }).then(() => {
+      alert("Profile updated!");
+      toggleEditProfileModal();
+      window.location.reload();
+    }).catch(error => {
+      alert("Failed to update profile: " + error.message);
+    });
+  }
+</script>
+
 </body>
 </html>
