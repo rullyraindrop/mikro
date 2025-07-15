@@ -67,9 +67,80 @@
       gap: 15px;
     }
   </style>
+<!-- Add this CSS block -->
+<style>
+  .profile-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+  }
+  
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #fff;
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .profile-menu {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    min-width: 150px;
+  }
+  
+  .profile-menu a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+    white-space: nowrap;
+  }
+  
+  .profile-menu a:hover {
+    background: #f5f5f5;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+</style>
 </head>
 <body>
   <header>
+    <div class="header-right">
+  <div id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</div>
+  <div id="userGreeting" style="display: none;"></div>
+  <button id="signInBtn" class="btn small" onclick="toggleSignInModal()">Sign In</button>
+  <!-- Update this profile tab container -->
+  <div class="profile-container">
+    <div id="profileTab" style="display: none;">
+      <img id="userPhoto" src="default-user.png" alt="Profile" class="profile-icon" onclick="toggleProfileMenu()" />
+      <div id="profileMenu" class="profile-menu">
+        <a href="#">Edit Profile</a>
+        <a href="#">Purchase History</a>
+        <a href="#" onclick="deleteAccount()">Delete Account</a>
+        <a href="#" onclick="signOutUser()">Sign Out</a>
+      </div>
+    </div>
+  </div>
+</div>
     <div class="header-center">
       <a href="index.html">
         <img src="logo.png" alt="Mikro Logo" class="logo" />
