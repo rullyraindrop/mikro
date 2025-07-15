@@ -142,6 +142,76 @@
       }
     });
   });
+// Add these new functions
+function toggleProfileMenu() {
+  const menu = document.getElementById("profileMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
 
+// Close profile menu when clicking outside
+document.addEventListener('click', function(event) {
+  const profileContainer = document.querySelector('.profile-container');
+  const profileMenu = document.getElementById("profileMenu");
+  
+  if (!profileContainer.contains(event.target) && profileMenu.style.display === 'block') {
+    profileMenu.style.display = 'none';
+  }
+});
+
+// Modify the auth state listener
+auth.onAuthStateChanged(user => {
+  const greeting = document.getElementById("userGreeting");
+  const signInBtn = document.getElementById("signInBtn");
+  const profileTab = document.getElementById("profileTab");
+  const userPhoto = document.getElementById("userPhoto");
+
+  if (user) {
+    // Check if email is verified (for email/password users)
+    if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+      alert("Please verify your email address. Check your inbox.");
+      auth.signOut();
+      return;
+    }
+
+    // Get user data from Firestore
+    db.collection("users").doc(user.uid).get().then(doc => {
+      const userData = doc.exists ? doc.data() : {};
+      const username = userData.username || user.displayName || user.email;
+      greeting.textContent = `Welcome, ${username}`;
+      
+      // Set profile picture
+      if (user.photoURL) {
+        // Google sign-in with photo
+        userPhoto.src = user.photoURL;
+      } else {
+        // Default for email/password users
+        userPhoto.src = "default-user.png";
+      }
+    });
+
+    // Update UI
+    greeting.style.display = "inline";
+    signInBtn.style.display = "none";
+    profileTab.style.display = "block";
+  } else {
+    // User signed out
+    greeting.style.display = "none";
+    signInBtn.style.display = "inline";
+    profileTab.style.display = "none";
+  }
+});
+
+// Update registerUser function
+function registerUser() {
+  // ... [keep all your existing registration code]
+  // Just ensure it creates the user document in Firestore
+  // with at least these fields:
+  db.collection("users").doc(user.uid).set({
+    username,
+    email,
+    photoURL: "", // Empty for email/password users
+    // ... [rest of your existing fields]
+  });
+}
 
 </script>
