@@ -158,7 +158,7 @@ document.addEventListener('click', function(event) {
   }
 });
 
-// Modify the auth state listener
+// Modified auth state listener
 auth.onAuthStateChanged(user => {
   const greeting = document.getElementById("userGreeting");
   const signInBtn = document.getElementById("signInBtn");
@@ -166,6 +166,8 @@ auth.onAuthStateChanged(user => {
   const userPhoto = document.getElementById("userPhoto");
 
   if (user) {
+    console.log("User signed in:", user); // Debug log
+    
     // Check if email is verified (for email/password users)
     if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
       alert("Please verify your email address. Check your inbox.");
@@ -175,31 +177,95 @@ auth.onAuthStateChanged(user => {
 
     // Get user data from Firestore
     db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        console.log("User document:", doc.data()); // Debug log
+      }
+      
       const userData = doc.exists ? doc.data() : {};
-      const username = userData.username || user.displayName || user.email;
+      const username = userData.username || user.displayName || user.email.split('@')[0];
       greeting.textContent = `Welcome, ${username}`;
       
       // Set profile picture
-      if (user.photoURL) {
-        // Google sign-in with photo
-        userPhoto.src = user.photoURL;
-      } else {
-        // Default for email/password users
-        userPhoto.src = "default-user.png";
-      }
+      userPhoto.src = user.photoURL || "default-user.png";
+    }).catch(error => {
+      console.error("Error getting user document:", error);
     });
 
     // Update UI
     greeting.style.display = "inline";
     signInBtn.style.display = "none";
     profileTab.style.display = "block";
+    
+    console.log("UI should be updated now"); // Debug log
   } else {
+    console.log("User signed out"); // Debug log
     // User signed out
     greeting.style.display = "none";
     signInBtn.style.display = "inline";
     profileTab.style.display = "none";
+    userPhoto.src = "default-user.png";
   }
 });
+
+// Ensure registerUser creates user document
+function registerUser() {
+  // ... [your existing registration code]
+  function signInUser() {
+  const email = document.getElementById("signInEmail").value.trim();
+  const password = document.getElementById("signInPassword").value;
+
+  console.log("Attempting to sign in with:", email); // Debug line 1
+  
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      console.log("Sign in successful, user:", userCredential.user); // Debug line 2
+      console.log("User UID:", userCredential.user.uid); // Debug line 3
+      console.log("Email verified?", userCredential.user.emailVerified); // Debug line 4
+      
+      // Check if user exists in Firestore
+      return db.collection("users").doc(userCredential.user.uid).get()
+        .then(doc => {
+          console.log("Firestore user document exists?", doc.exists); // Debug line 5
+          if (doc.exists) {
+            console.log("User data:", doc.data()); // Debug line 6
+          }
+          return userCredential;
+        });
+    })
+    .then((userCredential) => {
+      alert("Signed in successfully");
+      toggleSignInModal();
+    })
+    .catch(error => {
+      console.error("Sign in error:", error); // Debug line 7
+      console.error("Error code:", error.code); // Debug line 8
+      console.error("Error message:", error.message); // Debug line 9
+      alert(error.message);
+    });
+}
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      const user = userCredential.user;
+      return db.collection("users").doc(user.uid).set({
+        username,
+        email,
+        photoURL: "", // Important for email/password users
+        address: { province, city, kecamatan, postalCode: postal, fullAddress },
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        console.log("User document created for:", user.uid); // Debug log
+        return user.sendEmailVerification();
+      });
+    })
+    .then(() => {
+      document.getElementById("registerModal").style.display = "none";
+      alert("Verification email sent. Please check your inbox.");
+    })
+    .catch(error => {
+      console.error("Registration error:", error); // Debug log
+      alert(error.message);
+    });
+}
 
 // Update registerUser function
 function registerUser() {
