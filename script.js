@@ -77,9 +77,14 @@ function signInUser() {
 
   auth.signInWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
-      const user = auth.currentUser; // ✅ Make sure we use the latest live auth object
-      await user.reload(); // ✅ Get fresh verification status
+      const user = auth.currentUser;
+      await user.reload(); // Refresh verification status
 
+      // ✅ Only do this check here (not in onAuthStateChanged)
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+        await auth.signOut();
+        throw new Error("Please verify your email address first. Check your inbox.");
+      }
 
       alert("Signed in successfully");
       toggleSignInModal();
@@ -89,6 +94,7 @@ function signInUser() {
       alert(error.message);
     });
 }
+
 
 function signInWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
