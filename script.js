@@ -76,16 +76,19 @@ function signInUser() {
   const password = document.getElementById("signInPassword").value;
 
   auth.signInWithEmailAndPassword(email, password)
-    .then(async userCredential => {
-      await userCredential.user.reload();
-      if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
-        await auth.signOut();
+    .then(async (userCredential) => {
+      const user = auth.currentUser; // ✅ Make sure we use the latest live auth object
+      await user.reload(); // ✅ Get fresh verification status
+
+      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+        await auth.signOut(); // Prevent access
         throw new Error("Please verify your email address first. Check your inbox.");
       }
+
       alert("Signed in successfully");
       toggleSignInModal();
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Sign in error:", error);
       alert(error.message);
     });
