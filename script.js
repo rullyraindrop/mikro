@@ -80,10 +80,6 @@ function signInUser() {
       const user = auth.currentUser; // ✅ Make sure we use the latest live auth object
       await user.reload(); // ✅ Get fresh verification status
 
-      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-        await auth.signOut(); // Prevent access
-        throw new Error("Please verify your email address first. Check your inbox.");
-      }
 
       alert("Signed in successfully");
       toggleSignInModal();
@@ -141,12 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (user) {
       await user.reload();
-
-      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-        alert("Please verify your email address. Check your inbox.");
-        await auth.signOut();
-        return;
-      }
 
       db.collection("users").doc(user.uid).get().then(doc => {
         const data = doc.exists ? doc.data() : {};
