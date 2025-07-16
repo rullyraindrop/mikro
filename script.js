@@ -130,35 +130,35 @@ document.addEventListener('click', function (event) {
 // ✅ Auth State Listener — Single Clean Version
 document.addEventListener("DOMContentLoaded", () => {
   auth.onAuthStateChanged(async user => {
-    const greeting = document.getElementById("userGreeting");
-    const signInBtn = document.getElementById("signInBtn");
-    const profileTab = document.getElementById("profileTab");
-    const userPhoto = document.getElementById("userPhoto");
+  const greeting = document.getElementById("userGreeting");
+  const signInBtn = document.getElementById("signInBtn");
+  const profileTab = document.getElementById("profileTab");
+  const userPhoto = document.getElementById("userPhoto");
 
-    if (user) {
-      await user.reload();
+  if (user) {
+    await user.reload(); // this is fine to keep
 
-      db.collection("users").doc(user.uid).get().then(doc => {
-        const data = doc.exists ? doc.data() : {};
-        const username = data.username || user.displayName || user.email.split('@')[0];
+    db.collection("users").doc(user.uid).get()
+      .then(doc => {
+        const userData = doc.exists ? doc.data() : {};
+        const username = userData.username || user.displayName || user.email.split('@')[0];
         greeting.textContent = `Welcome, ${username}`;
         greeting.style.display = "inline";
         signInBtn.style.display = "none";
         profileTab.style.display = "flex";
-
-        const photoURL = user.photoURL || data.photoURL || "default-user.png";
-        if (userPhoto) userPhoto.src = photoURL;
-      }).catch(err => {
-        console.error("Error fetching Firestore user:", err);
+        userPhoto.src = user.photoURL || userData.photoURL || "default-user.png";
+      })
+      .catch(error => {
+        console.error("Failed to retrieve user data:", error);
       });
-    } else {
-      greeting.style.display = "none";
-      signInBtn.style.display = "inline";
-      profileTab.style.display = "none";
-      if (userPhoto) userPhoto.src = "default-user.png";
-    }
-  });
+  } else {
+    greeting.style.display = "none";
+    signInBtn.style.display = "inline";
+    profileTab.style.display = "none";
+    if (userPhoto) userPhoto.src = "default-user.png";
+  }
 });
+
 
 function deleteAccount() {
   const user = auth.currentUser;
