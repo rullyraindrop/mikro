@@ -151,15 +151,8 @@
     if (user) {
       await user.reload();
 
-      if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-        alert("Please verify your email address. Check your inbox.");
-        await auth.signOut();
-        greeting.style.display = "none";
-        signInBtn.style.display = "inline";
-        profileTab.style.display = "none";
-        if (userPhoto) userPhoto.src = "default-user.png";
-        return;
-      }
+    // Skip emailVerified re-check here — already handled during sign-in
+
 
       db.collection("users").doc(user.uid).get()
         .then(doc => {
