@@ -80,7 +80,7 @@
   }
 
 
- // Google Sign In
+// Google Sign In
 function signInWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
@@ -98,7 +98,11 @@ function signInWithGoogle() {
         });
       }
 
-      document.getElementById("signInModal").style.display = "none"; // ✅ Close the modal
+      // ✅ Set user's profile picture to the profile icon
+      document.getElementById("userPhoto").src = user.photoURL || "default-user.png";
+
+      // ✅ Close the modal
+      document.getElementById("signInModal").style.display = "none";
       alert("Signed in with Google successfully");
     })
     .catch(error => {
@@ -106,18 +110,27 @@ function signInWithGoogle() {
       alert("Google Sign-In failed: " + error.message);
     });
 }
+
   // Profile Menu Functions
-  function toggleProfileMenu() {
-    const menu = document.getElementById("profileMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+function toggleProfileMenu() {
+  const menu = document.getElementById("profileMenu");
+  menu.classList.toggle("visible");
+}
+
+// Click outside to close profile menu
+document.addEventListener('click', function(event) {
+  const profileIcon = document.getElementById('userPhoto');
+  const profileMenu = document.getElementById('profileMenu');
+
+  if (
+    !profileMenu.contains(event.target) &&
+    event.target !== profileIcon &&
+    profileMenu.classList.contains("visible")
+  ) {
+    profileMenu.classList.remove("visible");
   }
-  document.addEventListener('click', function(event) {
-    const profileContainer = document.querySelector('.profile-container');
-    const profileMenu = document.getElementById("profileMenu");
-    if (!profileContainer.contains(event.target) && profileMenu.style.display === 'block') {
-      profileMenu.style.display = 'none';
-    }
-  });
+});
+
 
   // Authentication State Listener
   document.addEventListener("DOMContentLoaded", () => {
