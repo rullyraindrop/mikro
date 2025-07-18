@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-storage-compat.js"></script>
+</head>
+<body>
+  <div class="edit-profile-container">
+    <h1>Edit Profile</h1>
+
+    <!-- Profile Picture -->
+    <div class="form-group">
+      <label for="profilePic">Profile Picture</label>
+      <input type="file" id="profilePic" accept="image/*" />
+      <img id="currentProfilePic" src="default-user.png" alt="Current Profile Picture" width="100" />
+    </div>
+
+    <!-- Username -->
+    <div class="form-group">
+      <label for="newUsername">Username</label>
+      <input type="text" id="newUsername" placeholder="Enter new username" />
+    </div>
+
+    <!-- Address -->
+    <div class="form-group">
+      <label for="province">Province</label>
+      <input type="text" id="province" placeholder="Province" />
+      <label for="city">City</label>
+      <input type="text" id="city" placeholder="City" />
+      <label for="kecamatan">Kecamatan</label>
+      <input type="text" id="kecamatan" placeholder="Kecamatan" />
+      <label for="postal">Postal Code</label>
+      <input type="text" id="postal" placeholder="Postal Code" />
+      <label for="fullAddress">Full Address</label>
+      <textarea id="fullAddress" placeholder="Full address"></textarea>
+    </div>
+
+    <!-- Change Password -->
+    <div class="form-group">
+      <label for="newPassword">New Password</label>
+      <input type="password" id="newPassword" placeholder="Enter new password" />
+    </div>
+
+    <button onclick="updateProfile()">Save Changes</button>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAIZJ65VfJX-KWMS0hb05-WWhudMSsz-_c",
+      authDomain: "mikro-c8998.firebaseapp.com",
+      projectId: "mikro-c8998",
+      storageBucket: "mikro-c8998.appspot.com",
+      messagingSenderId: "180409134328",
+      appId: "1:180409134328:web:fb0f479b8db3b1af5a1f0d",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        const doc = await db.collection("users").doc(user.uid).get();
+        const data = doc.data();
+        document.getElementById("newUsername").value = data.username || "";
+        document.getElementById("province").value = data.address?.province || "";
+        document.getElementById("city").value = data.address?.city || "";
+        document.getElementById("kecamatan").value = data.address?.kecamatan || "";
+        document.getElementById("postal").value = data.address?.postalCode || "";
+        document.getElementById("fullAddress").value = data.address?.fullAddress || "";
+        document.getElementById("currentProfilePic").src = data.photoURL || "default-user.png";
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    async function updateProfile() {
+      const user = auth.currentUser;
+      const username = document.getElementById("newUsername").value;
+      const province = document.getElementById("province").value;
+      const city = document.getElementById("city").value;
+      const kecamatan = document.getElementById("kecamatan").value;
+      const postal = document.getElementById("postal").value;
+      const fullAddress = document.getElementById("fullAddress").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const file = document.getElementById("profilePic").files[0];
+
+      let photoURL = user.photoURL;
+      if (file) {
+        const storageRef = storage.ref(`profilePictures/${user.uid}`);
+        await storageRef.put(file);
+        photoURL = await storageRef.getDownloadURL();
+        await user.updateProfile({ photoURL });
+      }
+
+      if (username) {
+        await user.updateProfile({ displayName: username });
+      }
+
+      if (newPassword) {
+        await user.updatePassword(newPassword);
+      }
+
+      await db.collection("users").doc(user.uid).update({
+        username,
+        photoURL,
+        address: { province, city, kecamatan, postalCode: postal, fullAddress },
+      });
+
+      alert("Profile updated successfully!");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
