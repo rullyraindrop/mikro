@@ -444,3 +444,15 @@ main {
   object-fit: cover;
   margin-bottom: 10px;
 }
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  z-index: 10;
+}
+.profile-menu.visible {
+  display: block;
+}
