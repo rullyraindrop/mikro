@@ -80,32 +80,32 @@
   }
 
 
-  // Google Sign In
-  function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(async result => {
-        const user = result.user;
-        // Check if user exists in Firestore
-        const userRef = db.collection("users").doc(user.uid);
-        const doc = await userRef.get();
-        if (!doc.exists) {
-          await userRef.set({
-            username: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        }
-        alert("Signed in with Google successfully");
-        toggleSignInModal();
-      })
-      .catch(error => {
-        console.error("Google sign-in error:", error);
-        alert("Google Sign-In failed: " + error.message);
-      });
-  }
+ // Google Sign In
+function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(async result => {
+      const user = result.user;
+      // Check if user exists in Firestore
+      const userRef = db.collection("users").doc(user.uid);
+      const doc = await userRef.get();
+      if (!doc.exists) {
+        await userRef.set({
+          username: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
 
+      document.getElementById("signInModal").style.display = "none"; // ✅ Close the modal
+      alert("Signed in with Google successfully");
+    })
+    .catch(error => {
+      console.error("Google sign-in error:", error);
+      alert("Google Sign-In failed: " + error.message);
+    });
+}
   // Profile Menu Functions
   function toggleProfileMenu() {
     const menu = document.getElementById("profileMenu");
