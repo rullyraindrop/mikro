@@ -114,8 +114,19 @@ function signInWithGoogle() {
   // Profile Menu Functions
 function toggleProfileMenu() {
   const menu = document.getElementById("profileMenu");
-  menu.classList.toggle("visible");
+  menu.classList.toggle("hidden");
 }
+
+// Close profile menu when clicking outside
+document.addEventListener("click", function (event) {
+  const profileContainer = document.getElementById("profileTab");
+  const profileMenu = document.getElementById("profileMenu");
+
+  if (!profileContainer.contains(event.target)) {
+    profileMenu.classList.add("hidden");
+  }
+});
+
 
 // Click outside to close profile menu
 document.addEventListener('click', function(event) {
