@@ -79,27 +79,6 @@
       });
   }
 
-  // Email/Password Sign In
-  function signInUser() {
-    const email = document.getElementById("signInEmail").value.trim();
-    const password = document.getElementById("signInPassword").value;
-
-    auth.signInWithEmailAndPassword(email, password)
-      .then(async userCredential => {
-        // Reload user to get latest emailVerified status
-        await userCredential.user.reload();
-        if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
-          await auth.signOut();
-          throw new Error("Please verify your email address first. Check your inbox.");
-        }
-        alert("Signed in successfully");
-        toggleSignInModal();
-      })
-      .catch(error => {
-        console.error("Sign in error:", error);
-        alert(error.message);
-      });
-  }
 
   // Google Sign In
   function signInWithGoogle() {
